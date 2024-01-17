@@ -30,3 +30,12 @@ def adminLogIn(request):
         return redirect('home')
 
     return Response('FUCK')
+
+@api_view(['POST'])
+def logOut(request):
+    if request.user.is_authenticated:
+        logout(request)
+
+        return redirect('login')
+
+    return Response('FUCK')

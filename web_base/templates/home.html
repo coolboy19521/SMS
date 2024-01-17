@@ -39,6 +39,16 @@
         <div class="ui basic button" onclick="col('addAnEmployee')">Cancel</div>
     </div>
 </div>
+<div class="ui tiny modal" id="logOut">
+    <div class="header">Log out</div>
+    <div class="content">
+        <p class="ui text">Are you sure you want to log out?</p>
+    </div>
+    <div class="basic actions">
+        <button class="positive ui button" onclick="logOut()">Yes</button>
+        <div class="negative ui button" onclick="col('logOut')">No</div>
+    </div>
+</div>
 <div class="ui bottom attached segment pushable">
     <div class="ui visible inverted left vertical sidebar menu">
         <a class="active item">
@@ -53,7 +63,7 @@
             <i class="smile icon"></i>
             Settings
         </a>
-        <a class="item">
+        <a class="item" onclick="tog('logOut')">
             <i class="calendar icon"></i>
             Log out
         </a>
@@ -89,6 +99,21 @@
 
     let col = (modId) => {
         $(`.ui.tiny.modal#${modId}`).modal('setting', 'transition', 'vertical flip').modal('toggle')
+    }
+
+    let logOut = async () => {
+        formData = new FormData()
+
+        formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
+
+        await fetch('api/logOut', {
+            body: formData,
+            method: 'POST'
+        }).then((response) => {
+            if (response.redirected) {
+                window.location.href = response.url
+            }
+        })
     }
 
     let addAnEmployee = async () => {
