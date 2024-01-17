@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Log In
+{% endblock title %}
+
+{% block content %}
+{% csrf_token %}
+<style>
+    * {
+        border: 0!important;
+    }
+
+    .ui.left.visible.sidebar, .ui.right.visible.sidebar {
+        box-shadow: none!important;
+    }
+
+    .ccenter {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .dhuge {
+        height: 300px;
+    }
+</style>
+<div class="ui tiny modal" id="adminLogIn">
+    <div class="header">Log in</div>
+    <div class="content">
+        <form class="ui large form initial" method="POST">
+            <div class="field">
+                <div class="ui left icon input">
+                    <i class="user icon"></i>
+                    <input type="text" name="user" placeholder="Admin username" autocomplete="off" id="user" spellcheck="false">
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui left icon input">
+                    <i class="thumbtack icon"></i>
+                    <input type="password" name="pasd" placeholder="Admin password" autocomplete="off" id="pasd" spellcheck="false">
+                </div>
+            </div>
+            <div class="ui error message"></div>
+        </form>
+    </div>
+    <div class="basic actions">
+        <button class="ui basic button" onclick="adminLogIn()">Log in</button>
+        <div class="ui basic button" onclick="col('adminLogIn')">Cancel</div>
+    </div>
+</div>
+<div class="ui container ccenter">
+    <div class="ui two column divided grid middle aligned">
+        <div class="stretched row">
+            <div class="column">
+                <button class="ui button dhuge">
+                    <span class="ui big text">Employee log in</span>
+                </button>
+            </div>
+            <div class="column">
+                <button class="ui button dhuge" onclick="tog('adminLogIn')">
+                    <span class="ui big text">Admin log in</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let tog = (modId) => {
+        for (let x of $(`.ui.tiny.modal#${modId} input`)) {
+            x.value = ''
+        }
+
+        $(`.ui.tiny.modal#${modId}`).modal('setting', 'transition', 'vertical flip').modal('toggle')
+    }
+
+    let col = (modId) => {
+        $(`.ui.tiny.modal#${modId}`).modal('setting', 'transition', 'vertical flip').modal('toggle')
+    }
+
+    let adminLogIn = async () => {
+        formData = new FormData($('.ui.tiny.modal#adminLogIn form')[0])
+
+        formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
+
+        await fetch('api/adminLogIn', {
+            body: formData,
+            method: 'POST'
+        }).then((response) => {
+            if (response.redirected) {
+                window.location.href = response.url
+            }
+        })
+    }
+</script>
+{% endblock content %}

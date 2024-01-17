@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Home
+{% endblock title %}
+
+{% block content %}
+{% csrf_token %}
+<style>
+    * {
+        border: 0!important;
+    }
+
+    .ui.left.visible.sidebar, .ui.right.visible.sidebar {
+        box-shadow: none!important;
+    }
+</style>
+<div class="ui tiny modal" id="addAnEmployee">
+    <div class="header">Add an employee</div>
+    <div class="content">
+        <form class="ui large form initial" method="POST">
+            <div class="field">
+                <div class="ui left icon input">
+                    <i class="user icon"></i>
+                    <input type="text" name="name" placeholder="Employee name" autocomplete="off" id="name" spellcheck="false">
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui left icon input">
+                    <i class="thumbtack icon"></i>
+                    <input type="text" name="sidd" placeholder="Employee id" autocomplete="off" id="sidd" spellcheck="false">
+                </div>
+            </div>
+            <div class="ui error message"></div>
+        </form>
+    </div>
+    <div class="basic actions">
+        <button class="ui basic button" onclick="addAnEmployee()">Save</button>
+        <div class="ui basic button" onclick="col('addAnEmployee')">Cancel</div>
+    </div>
+</div>
+<div class="ui bottom attached segment pushable">
+    <div class="ui visible inverted left vertical sidebar menu">
+        <a class="active item">
+            <i class="home icon"></i>
+            Devices
+        </a>
+        <a class="item">
+            <i class="block layout icon"></i>
+            Teams
+        </a>
+        <a class="item">
+            <i class="smile icon"></i>
+            Settings
+        </a>
+        <a class="item">
+            <i class="calendar icon"></i>
+            Log out
+        </a>
+    </div>
+    <div class="pusher">
+        <div class="ui basic segment">
+            {% for device in devices %}
+                
+            {% endfor %}
+            <button class="ui button">Follow</button>
+        </div>
+    </div>
+    <div class="ui visible right vertical sidebar menu">
+        <div class="ui basic segment">
+            <button class="ui left floated button" onclick="tog('addAnEmployee')" style="width: 100%">+ Add an employee</button>
+        </div>
+        <div class="ui basic segment">
+            <button class="ui left floated button" style="width: 100%">+ Add a device</button>
+        </div>
+        <div class="ui basic segment">
+            <button class="ui left floated button" style="width: 100%;">+ Add a team</button>
+        </div>
+    </div>
+</div>
+<script>
+    let tog = (modId) => {
+        for (let x of $(`.ui.tiny.modal#${modId} input`)) {
+            x.value = ''
+        }
+
+        $(`.ui.tiny.modal#${modId}`).modal('setting', 'transition', 'vertical flip').modal('toggle')
+    }
+
+    let col = (modId) => {
+        $(`.ui.tiny.modal#${modId}`).modal('setting', 'transition', 'vertical flip').modal('toggle')
+    }
+
+    let addAnEmployee = async () => {
+        formData = new FormData($('.ui.tiny.modal form')[0])
+
+        formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
+
+        await fetch('api/addAnEmployee', {
+            body: formData,
+            method: 'POST'
+        }).then(async (result) => {
+            await result.json().then((jsonResponse) => {
+                console.log(jsonResponse)
+                col()
+            })
+        })
+    }
+</script>
+{% endblock content %}
