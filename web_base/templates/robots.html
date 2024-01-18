@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    Home
+    Robots
 {% endblock title %}
 
 {% block content %}
@@ -15,28 +15,22 @@
         box-shadow: none!important;
     }
 </style>
-<div class="ui tiny modal" id="addAnEmployee">
-    <div class="header">Add an employee</div>
+<div class="ui tiny modal" id="addADevice">
+    <div class="header">Add a device</div>
     <div class="content">
         <form class="ui large form initial" method="POST">
             <div class="field">
                 <div class="ui left icon input">
                     <i class="user icon"></i>
-                    <input type="text" name="name" placeholder="Employee name" autocomplete="off" id="name" spellcheck="false">
-                </div>
-            </div>
-            <div class="field">
-                <div class="ui left icon input">
-                    <i class="thumbtack icon"></i>
-                    <input type="text" name="sidd" placeholder="Employee id" autocomplete="off" id="sidd" spellcheck="false">
+                    <input type="text" name="nump" placeholder="Number plate" autocomplete="off" id="nump" spellcheck="false">
                 </div>
             </div>
             <div class="ui error message"></div>
         </form>
     </div>
     <div class="basic actions">
-        <button class="ui basic button" onclick="addAnEmployee()">Save</button>
-        <div class="ui basic button" onclick="col('addAnEmployee')">Cancel</div>
+        <button class="ui basic button" onclick="addADevice()">Save</button>
+        <div class="ui basic button" onclick="col('addADevice')">Cancel</div>
     </div>
 </div>
 <div class="ui tiny modal" id="logOut">
@@ -49,15 +43,32 @@
         <div class="negative ui button" onclick="col('logOut')">No</div>
     </div>
 </div>
+<div class="ui tiny modal" id="showDevicePassword">
+    <div class="header">Log out</div>
+    <div class="content">
+        <span class="ui small grey text" style="margin: 10px;">
+            * Copy this password and send it to the owner of the device
+        </span>
+        <div class="ui center aligned container" style="margin-top: 20px;">
+            <div class="ui action input">
+                <input type="text" id="pasd" disabled>
+                <button class="ui button" onclick="copyToClipboard(document.querySelector('#pasd'))">Copy</button>
+            </div>
+        </div>
+    </div>
+    <div class="basic actions">
+        <div class="ui basic button" onclick="col('showDevicePassword')">Close</div>
+    </div>
+</div>
 <div class="ui bottom attached segment pushable">
     <div class="ui visible inverted left vertical sidebar menu">
-        <a class="active item">
+        <a class="active item" href="{% url 'robots' %}">
             <i class="home icon"></i>
-            Devices
+            Robots
         </a>
-        <a class="item">
+        <a class="item" href="{% url 'devices' %}">
             <i class="block layout icon"></i>
-            Teams
+            Devices
         </a>
         <a class="item">
             <i class="smile icon"></i>
@@ -78,26 +89,22 @@
     </div>
     <div class="ui visible right vertical sidebar menu">
         <div class="ui basic segment">
-            <button class="ui left floated button" onclick="tog('addAnEmployee')" style="width: 100%">+ Add an employee</button>
-        </div>
-        <div class="ui basic segment">
-            <button class="ui left floated button" style="width: 100%">+ Add a device</button>
-        </div>
-        <div class="ui basic segment">
-            <button class="ui left floated button" style="width: 100%;">+ Add a team</button>
+            <button class="ui left floated button" onclick="tog('addADevice')" style="width: 100%">+ Add a device</button>
         </div>
     </div>
 </div>
 <script>
-    let tog = (modId) => {
-        for (let x of $(`.ui.tiny.modal#${modId} input`)) {
-            x.value = ''
-        }
+    var sleepSetTimeout_ctrl;
 
+    let tog = (modId) => {
         $(`.ui.tiny.modal#${modId}`).modal('setting', 'transition', 'vertical flip').modal('toggle')
     }
 
     let col = (modId) => {
+        for (let x of $(`.ui.tiny.modal#${modId} input`)) {
+            x.value = ''
+        }
+
         $(`.ui.tiny.modal#${modId}`).modal('setting', 'transition', 'vertical flip').modal('toggle')
     }
 
@@ -116,20 +123,47 @@
         })
     }
 
-    let addAnEmployee = async () => {
-        formData = new FormData($('.ui.tiny.modal form')[0])
+    let addADevice = async () => {
+        formData = new FormData($('.ui.tiny.modal#addADevice form')[0])
 
         formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
 
-        await fetch('api/addAnEmployee', {
+        await fetch('api/addADevice', {
             body: formData,
             method: 'POST'
         }).then(async (result) => {
             await result.json().then((jsonResponse) => {
-                console.log(jsonResponse)
-                col()
+                notify(formData.get('nump'), jsonResponse)
+                col('addADevice')
             })
         })
+    }
+
+    let notify = async (nump, jsonResponse) => {
+        $.toast({
+            displayTime: 2000,
+            title: `A new device`,
+            message: `Device ${nump} is being registered`,
+        })
+
+        await sleep(2000)
+
+        $('.ui.tiny.modal#showDevicePassword .header').text(`Password for ${nump}`)
+        $('.ui.tiny.modal#showDevicePassword #pasd').val(jsonResponse['pasd'])
+        tog('showDevicePassword')
+    }
+
+    let copyToClipboard = (input) => {
+        input.select()
+        input.setSelectionRange(0, 99999)
+
+        navigator.clipboard.writeText(input.value)
+        alert('copied ' + input.value)
+    }
+
+    let sleep = (ms) => {
+        clearInterval(sleepSetTimeout_ctrl);
+        return new Promise(resolve => sleepSetTimeout_ctrl = setTimeout(resolve, ms));
     }
 </script>
 {% endblock content %}

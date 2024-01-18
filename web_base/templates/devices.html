@@ -1,0 +1,246 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Devices
+{% endblock title %}
+
+{% block content %}
+{% csrf_token %}
+<style>
+    * {
+        border: 0!important;
+    }
+
+    .ui.left.visible.sidebar, .ui.right.visible.sidebar {
+        box-shadow: none!important;
+    }
+</style>
+<div class="ui tiny modal" id="addADevice">
+    <div class="header">Add a device</div>
+    <div class="content">
+        <form class="ui large form initial" method="POST">
+            <div class="field">
+                <div class="ui left icon input">
+                    <i class="user icon"></i>
+                    <input type="text" name="nump" placeholder="Number plate" autocomplete="off" id="nump" spellcheck="false">
+                </div>
+            </div>
+            <div class="ui error message"></div>
+        </form>
+    </div>
+    <div class="basic actions">
+        <button class="ui basic button" onclick="addADevice()">Save</button>
+        <div class="ui basic button" onclick="col('addADevice')">Cancel</div>
+    </div>
+</div>
+<div class="ui tiny modal" id="logOut">
+    <div class="header">Log out</div>
+    <div class="content">
+        <p class="ui text">Are you sure you want to log out?</p>
+    </div>
+    <div class="basic actions">
+        <button class="positive ui button" onclick="logOut()">Yes</button>
+        <div class="negative ui button" onclick="col('logOut')">No</div>
+    </div>
+</div>
+<div class="ui tiny modal" id="showDevicePassword">
+    <div class="header">Log out</div>
+    <div class="content">
+        <span class="ui small grey text" style="margin: 10px;">
+            * Copy this password and send it to the owner of the device
+        </span>
+        <div class="ui center aligned container" style="margin-top: 20px;">
+            <div class="ui action input">
+                <input type="text" id="pasd" disabled>
+                <button class="ui button" onclick="copyToClipboard(document.querySelector('#pasd'))">Copy</button>
+            </div>
+        </div>
+    </div>
+    <div class="basic actions">
+        <div class="ui basic button" onclick="col('showDevicePassword')">Close</div>
+    </div>
+</div>
+<div class="ui bottom attached segment pushable">
+    <div class="ui visible inverted left vertical sidebar menu">
+        <a class="item" href="{% url 'robots' %}">
+            <i class="home icon"></i>
+            Robots
+        </a>
+        <a class="active item" href="{% url 'devices' %}">
+            <i class="block layout icon"></i>
+            Devices
+        </a>
+        <a class="item">
+            <i class="smile icon"></i>
+            Settings
+        </a>
+        <a class="item" onclick="tog('logOut')">
+            <i class="calendar icon"></i>
+            Log out
+        </a>
+    </div>
+    <div class="pusher">
+        <div class="ui basic segment" id="cont">
+            <div class="ui search">
+                <div class="ui icon input">
+                    <input class="prompt" type="text" placeholder="Github Repositories..." name="searchText">
+                    <i class="search icon"></i>
+                </div>
+                <div class="results"></div>
+            </div>
+            <template id="device">
+                <div class="ui divided items">
+                    <div class="item">
+                        <canvas width="220" height="120"></canvas>
+                        <div class="content">
+                            <a class="header">12 Years a Slave</a>
+                            <div class="meta">
+                                <span class="cinema">Union Square 14</span>
+                            </div>
+                            <div class="description">
+                                <p></p>
+                            </div>
+                            <div class="extra">
+                                <div class="ui label">IMAX</div>
+                                <div class="ui label"><i class="globe icon"></i> Additional Languages</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+    <div class="ui visible right vertical sidebar menu">
+        <div class="ui basic segment">
+            <button class="ui left floated button" onclick="tog('addADevice')" style="width: 100%">+ Add a device</button>
+        </div>
+    </div>
+</div>
+<script>
+    var sleepSetTimeout_ctrl;
+
+    let tog = (modId) => {
+        $(`.ui.tiny.modal#${modId}`).modal('setting', 'transition', 'vertical flip').modal('toggle')
+    }
+
+    let col = (modId) => {
+        for (let x of $(`.ui.tiny.modal#${modId} input`)) {
+            x.value = ''
+        }
+
+        $(`.ui.tiny.modal#${modId}`).modal('setting', 'transition', 'vertical flip').modal('toggle')
+    }
+
+    let logOut = async () => {
+        formData = new FormData()
+
+        formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
+
+        await fetch('api/logOut', {
+            body: formData,
+            method: 'POST'
+        }).then((response) => {
+            if (response.redirected) {
+                window.location.href = response.url
+            }
+        })
+    }
+
+    let addADevice = async () => {
+        formData = new FormData($('.ui.tiny.modal#addADevice form')[0])
+
+        formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
+
+        await fetch('api/addADevice', {
+            body: formData,
+            method: 'POST'
+        }).then(async (result) => {
+            await result.json().then((jsonResponse) => {
+                notify(formData.get('nump'), jsonResponse)
+                col('addADevice')
+            })
+        })
+    }
+
+    let notify = async (nump, jsonResponse) => {
+        $.toast({
+            displayTime: 2000,
+            title: `A new device`,
+            message: `Device ${nump} is being registered`,
+        })
+
+        await sleep(2000)
+
+        $('.ui.tiny.modal#showDevicePassword .header').text(`Password for ${nump}`)
+        $('.ui.tiny.modal#showDevicePassword #pasd').val(jsonResponse['pasd'])
+        tog('showDevicePassword')
+    }
+
+    let copyToClipboard = (input) => {
+        input.select()
+        input.setSelectionRange(0, 99999)
+
+        navigator.clipboard.writeText(input.value)
+        alert('copied ' + input.value)
+    }
+
+    let sleep = (ms) => {
+        clearInterval(sleepSetTimeout_ctrl);
+        return new Promise(resolve => sleepSetTimeout_ctrl = setTimeout(resolve, ms));
+    }
+
+    let getAllDevices = async () => {
+        await fetch('/api/getAllDevices').then(async (response) => {
+            await response.json().then((jsonResponse) => {
+                targetContainer = document.querySelector('#cont');
+
+                for (let device of jsonResponse) {
+                    content = document.querySelector('template#device').content.cloneNode(true);
+                    content.querySelector('.header').text = `Device ${device['nump']}`
+                    
+                    targetContainer.appendChild(document.importNode(content, true));
+                }
+
+                console.log(targetContainer.querySelectorAll('canvas'))
+
+                i = 0
+
+                for (canvas of document.querySelectorAll('canvas')) {
+                    console.log(canvas)
+                    draw(canvas, jsonResponse[i]['nump'])
+                    i ++
+                }
+            })
+        })
+    }
+
+    let draw = (canvas, text) => {
+        let ctx = canvas.getContext('2d');
+        let img = new Image();
+        
+        img.addEventListener("load", ()=>{
+            ctx.drawImage(img,0,5, 200, 40);
+            ctx.font = '26px arial';
+            ctx.fillText(text, 50, 34);
+        });
+        
+        img.src = "{% static 'nump.png' %}";
+    }
+
+    $('.ui.search')
+        .search({
+            apiSettings: {
+            url: '/api/getADevice?searchText={query}'
+        },
+        fields: {
+            results : 'devices',
+            title   : 'nump',
+            url     : 'urln'
+        },
+        minCharacters : 3
+    })
+
+    getAllDevices()
+</script>
+{% endblock content %}

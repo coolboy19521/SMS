@@ -1,18 +1,14 @@
 from django.db import models
 
-class Device(models.Model):
+class Robot(models.Model):
     date = models.DateField(auto_now_add = True)
     time = models.TimeField(auto_now_add = True)
     coor = models.TextField()
 
-class Employee(models.Model):
+class Device(models.Model):
     date = models.DateField(auto_now_add = True)
     time = models.TimeField(auto_now_add = True)
-    name = models.TextField()
-    sidd = models.TextField()
+    nump = models.TextField()
     pasd = models.TextField()
-
-class Team(models.Model):
-    date = models.DateField(auto_now_add = True)
-    time = models.TimeField(auto_now_add = True)
-    mems = models.ManyToManyField(Employee)
+    urln = models.TextField()
+    firs = models.BooleanField()

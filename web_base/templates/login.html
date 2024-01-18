@@ -50,12 +50,36 @@
         <div class="ui basic button" onclick="col('adminLogIn')">Cancel</div>
     </div>
 </div>
+<div class="ui tiny modal" id="deviceLogIn">
+    <div class="header">Log in</div>
+    <div class="content">
+        <form class="ui large form initial" method="POST">
+            <div class="field">
+                <div class="ui left icon input">
+                    <i class="user icon"></i>
+                    <input type="text" name="nump" placeholder="Number plate" autocomplete="off" id="nump" spellcheck="false">
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui left icon input">
+                    <i class="thumbtack icon"></i>
+                    <input type="password" name="pasd" placeholder="Device password" autocomplete="off" id="pasd" spellcheck="false">
+                </div>
+            </div>
+            <div class="ui error message"></div>
+        </form>
+    </div>
+    <div class="basic actions">
+        <button class="ui basic button" onclick="deviceLogIn()">Log in</button>
+        <div class="ui basic button" onclick="col('adminLogIn')">Cancel</div>
+    </div>
+</div>
 <div class="ui container ccenter">
     <div class="ui two column divided grid middle aligned">
         <div class="stretched row">
             <div class="column">
-                <button class="ui button dhuge">
-                    <span class="ui big text">Employee log in</span>
+                <button class="ui button dhuge" onclick="tog('deviceLogIn')">
+                    <span class="ui big text">Device log in</span>
                 </button>
             </div>
             <div class="column">
@@ -68,14 +92,14 @@
 </div>
 <script>
     let tog = (modId) => {
-        for (let x of $(`.ui.tiny.modal#${modId} input`)) {
-            x.value = ''
-        }
-
         $(`.ui.tiny.modal#${modId}`).modal('setting', 'transition', 'vertical flip').modal('toggle')
     }
 
     let col = (modId) => {
+        for (let x of $(`.ui.tiny.modal#${modId} input`)) {
+            x.value = ''
+        }
+
         $(`.ui.tiny.modal#${modId}`).modal('setting', 'transition', 'vertical flip').modal('toggle')
     }
 
@@ -85,6 +109,21 @@
         formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
 
         await fetch('api/adminLogIn', {
+            body: formData,
+            method: 'POST'
+        }).then((response) => {
+            if (response.redirected) {
+                window.location.href = response.url
+            }
+        })
+    }
+
+    let deviceLogIn = async () => {
+        formData = new FormData($('.ui.tiny.modal#deviceLogIn form')[0])
+
+        formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
+
+        await fetch('api/deviceLogIn', {
             body: formData,
             method: 'POST'
         }).then((response) => {
