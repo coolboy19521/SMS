@@ -35,6 +35,15 @@
         <div class="negative ui button" onclick="col('logOut')">No</div>
     </div>
 </div>
+<div class="ui tiny modal" id="liveLocation">
+    <div class="header">Location of </div>
+    <div class="content" style="padding:0">
+        <div id="map"></div>
+    </div>
+    <div class="basic actions">
+        <div class="ui basic button" onclick="col('liveLocation')">Close</div>
+    </div>
+</div>
 <div class="ui tiny modal" id="showDevicePassword">
     <div class="header">Log out</div>
     <div class="content">
@@ -71,7 +80,7 @@
         <div class="ui basic segment" id="cont">
             <div class="ui search">
                 <div class="ui icon input">
-                    <input class="prompt" type="text" placeholder="Github Repositories..." name="searchText">
+                    <input class="prompt" type="text" placeholder="Search device..." name="searchText" style="width:300px">
                     <i class="search icon"></i>
                 </div>
                 <div class="results"></div>
@@ -83,14 +92,16 @@
                         <div class="content">
                             <a class="header">12 Years a Slave</a>
                             <div class="meta">
-                                <span class="cinema">Union Square 14</span>
+                                <span class="cinema">Device <span id="did"></span></span>
                             </div>
                             <div class="description">
-                                <p></p>
+                                <div class="ui label" id="plat">IOS</div>
+                                <div class="ui label" id="gpsButton" onclick="console.log('fuck')"><i class="globe icon"></i><span id="gps">42, 49</span></div>
                             </div>
                             <div class="extra">
-                                <div class="ui label">IOS</div>
-                                <div class="ui label"><i class="globe icon"></i>42, 49</div>
+                                <div class="ui primary button" id="edit">Edit</div>
+                                <div class="ui negative button" id="delete">Delete</div>
+                                <br>
                             </div>
                         </div>
                     </div>
@@ -105,15 +116,24 @@
     </div>
 </div>
 <script>
+var devices
+
 let getAllDevices = async () => {
     await fetch('/api/getAllDevices').then(async (response) => {
         await response.json().then((jsonResponse) => {
+            devices = jsonResponse
             targetContainer = document.querySelector('#cont');
 
             for (let device of jsonResponse) {
                 content = document.querySelector('template#device').content.cloneNode(true);
                 content.querySelector('.header').text = `Device ${device['nump']}`
-                
+                content.querySelector('#plat').innerHTML = device['plat']
+                content.querySelector('#did').innerHTML = device['id']
+                content.querySelector('#gps').innerHTML = `${device['lati'].substring(0, 5)}°, ${device['long'].substring(0, 5)}°`
+                content.querySelector('#gpsButton').setAttribute('onclick', `liveLocation(${device['lati']}, ${device['long']})`)
+                content.querySelector('#edit').setAttribute('onclick', `liveLocation(${device['lati']}, ${device['long']})`)
+                content.querySelector('#delete').setAttribute('onclick', `deviceDelete(${device['id']})`)
+
                 targetContainer.appendChild(document.importNode(content, true));
             }
 
@@ -127,6 +147,32 @@ let getAllDevices = async () => {
                 i ++
             }
         })
+    })
+}
+
+let liveLocation = (lati, long) => {
+    tog('liveLocation')
+
+    map = document.querySelector('#liveLocation #map')
+
+    console.log(device)
+
+    map.innerHTML = `<iframe width="${document.querySelector('#liveLocation').offsetWidth}" height="450" src="https://maps.google.com/maps?q=${lati},${long}&amp;z=15&amp;output=embed"></iframe>`
+    console.log(map.innerHTML)
+}
+
+let deviceDelete = async (id) => {
+    formData = new FormData()
+
+    formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
+
+    fetch(`/api/deviceDelete/${id}`, {
+        body: formData,
+        method: 'POST'
+    }).then((response) => {
+        if (response.redirected) {
+            window.location.href = response.url
+        }
     })
 }
 

@@ -98,6 +98,19 @@ def updateDeviceGPS(request, id):
     return Response('ok')
 
 @api_view(['POST'])
+def updateDevicePlatform(request, id):
+    plat = request.POST.get('plat')
+
+    print(plat)
+    
+    device = Device.objects.get(id = id)
+    device.plat = plat
+
+    device.save()
+
+    return Response('ok')
+
+@api_view(['POST'])
 def changeDevicePassword(request, id):
     if request.session.get('deviceId', None) == id:
         device = Device.objects.get(id = id)
@@ -115,3 +128,10 @@ def deviceLogOut(request):
     request.session['deviceLoggedIn'] = False
 
     return redirect('login')
+
+@api_view(['POST'])
+def deviceDelete(request, id):
+    if request.user.is_authenticated:
+        Device.objects.get(id = id).delete()
+
+    return redirect('devices')
