@@ -135,3 +135,16 @@ def deviceDelete(request, id):
         Device.objects.get(id = id).delete()
 
     return redirect('devices')
+
+@api_view(['POST'])
+def addRobot(request):
+    lati, long = request.POST.get('lati'), request.POST.get('long')
+
+    robot = Robot(
+        lati = lati,
+        long = long
+    )
+
+    robot.save()
+
+    return Response('ok')
