@@ -91,46 +91,34 @@
     </div>
 </div>
 <script>
-    let tog = (modId) => {
-        $(`.ui.tiny.modal#${modId}`).modal('setting', 'transition', 'vertical flip').modal('toggle')
-    }
+let adminLogIn = async () => {
+    formData = new FormData($('.ui.tiny.modal#adminLogIn form')[0])
 
-    let col = (modId) => {
-        for (let x of $(`.ui.tiny.modal#${modId} input`)) {
-            x.value = ''
+    formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
+
+    await fetch('api/adminLogIn', {
+        body: formData,
+        method: 'POST'
+    }).then((response) => {
+        if (response.redirected) {
+            window.location.href = response.url
         }
+    })
+}
 
-        $(`.ui.tiny.modal#${modId}`).modal('setting', 'transition', 'vertical flip').modal('toggle')
-    }
+let deviceLogIn = async () => {
+    formData = new FormData($('.ui.tiny.modal#deviceLogIn form')[0])
 
-    let adminLogIn = async () => {
-        formData = new FormData($('.ui.tiny.modal#adminLogIn form')[0])
+    formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
 
-        formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
-
-        await fetch('api/adminLogIn', {
-            body: formData,
-            method: 'POST'
-        }).then((response) => {
-            if (response.redirected) {
-                window.location.href = response.url
-            }
-        })
-    }
-
-    let deviceLogIn = async () => {
-        formData = new FormData($('.ui.tiny.modal#deviceLogIn form')[0])
-
-        formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
-
-        await fetch('api/deviceLogIn', {
-            body: formData,
-            method: 'POST'
-        }).then((response) => {
-            if (response.redirected) {
-                window.location.href = response.url
-            }
-        })
-    }
+    await fetch('api/deviceLogIn', {
+        body: formData,
+        method: 'POST'
+    }).then((response) => {
+        if (response.redirected) {
+            window.location.href = response.url
+        }
+    })
+}
 </script>
 {% endblock content %}

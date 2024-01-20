@@ -6,11 +6,55 @@
 
 {% block content %}
 {% csrf_token %}
-<div id="map"></div>
+<div class="ui tiny modal" id="changeDevicePassword">
+    <div class="header">Change password</div>
+    <div class="content">
+        <form class="ui large form initial" method="POST">
+            <div class="field">
+                <div class="ui left icon input">
+                    <i class="user icon"></i>
+                    <input type="text" name="nump" placeholder="New password" autocomplete="off" id="nump" spellcheck="false">
+                </div>
+            </div>
+            <div class="ui error message"></div>
+        </form>
+    </div>
+    <div class="basic actions">
+        <button class="ui basic button" onclick="changeDevicePassword()">Save</button>
+        <div class="ui basic button" onclick="col('changeDevicePassword')">Cancel</div>
+    </div>
+</div>
+<div class="ui tiny modal" id="deviceLogOut">
+    <div class="header">Log out</div>
+    <div class="content">
+        <p class="ui text">Are you sure you want to log out?</p>
+    </div>
+    <div class="basic actions">
+        <button class="positive ui button" onclick="deviceLogOut()">Yes</button>
+        <div class="negative ui button" onclick="col('deviceLogOut')">No</div>
+    </div>
+</div>
+<div class="ui bottom attached segment pushable">
+    <div class="ui visible inverted left vertical sidebar menu">
+        <a class="active item" href="{% url 'robots' %}">
+            <i class="home icon"></i>
+            Tasks
+        </a>
+        <a class="item" onclick="tog('deviceLogOut')">
+            <i class="calendar icon"></i>
+            Log out
+        </a>
+    </div>
+    <div class="pusher">
+        <div class="ui basic segment">
+            <button class="ui button">Follow</button>
+        </div>
+    </div>
+</div>
 <script>
 const watchId = navigator.geolocation.watchPosition(async position => {
-    const { latitude, longitude } = position.coords;
-    let formData = new FormData()
+    const { latitude, longitude } = position.coords
+    formData = new FormData()
 
     formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
     formData.append('latitude', latitude)
@@ -20,8 +64,26 @@ const watchId = navigator.geolocation.watchPosition(async position => {
         body: formData,
         method: 'POST',
     })
+})
 
-    console.log('hey')
-});
+let changeDevicePassword = async () => {
+    formData = new FormData()
+
+    formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
+    formData.append('new_pasd', document.querySelector('#changeDevicePassword #nump').value)
+
+    fetch('/api/changeDevicePassword/{{ deviceId }}', {
+        body: formData,
+        method: 'POST'
+    }).then((response) => {
+        if (response.redirected) {
+            window.location.href = response.url
+        }
+    })
+}
+
+if ('{{ firs }}' == 'True') {
+    tog('changeDevicePassword')
+}
 </script>
 {% endblock content %}

@@ -7,15 +7,6 @@
 
 {% block content %}
 {% csrf_token %}
-<style>
-    * {
-        border: 0!important;
-    }
-
-    .ui.left.visible.sidebar, .ui.right.visible.sidebar {
-        box-shadow: none!important;
-    }
-</style>
 <div class="ui tiny modal" id="addADevice">
     <div class="header">Add a device</div>
     <div class="content">
@@ -71,10 +62,6 @@
             <i class="block layout icon"></i>
             Devices
         </a>
-        <a class="item">
-            <i class="smile icon"></i>
-            Settings
-        </a>
         <a class="item" onclick="tog('logOut')">
             <i class="calendar icon"></i>
             Log out
@@ -102,8 +89,8 @@
                                 <p></p>
                             </div>
                             <div class="extra">
-                                <div class="ui label">IMAX</div>
-                                <div class="ui label"><i class="globe icon"></i> Additional Languages</div>
+                                <div class="ui label">IOS</div>
+                                <div class="ui label"><i class="globe icon"></i>42, 49</div>
                             </div>
                         </div>
                     </div>
@@ -118,129 +105,57 @@
     </div>
 </div>
 <script>
-    var sleepSetTimeout_ctrl;
+let getAllDevices = async () => {
+    await fetch('/api/getAllDevices').then(async (response) => {
+        await response.json().then((jsonResponse) => {
+            targetContainer = document.querySelector('#cont');
 
-    let tog = (modId) => {
-        $(`.ui.tiny.modal#${modId}`).modal('setting', 'transition', 'vertical flip').modal('toggle')
-    }
+            for (let device of jsonResponse) {
+                content = document.querySelector('template#device').content.cloneNode(true);
+                content.querySelector('.header').text = `Device ${device['nump']}`
+                
+                targetContainer.appendChild(document.importNode(content, true));
+            }
 
-    let col = (modId) => {
-        for (let x of $(`.ui.tiny.modal#${modId} input`)) {
-            x.value = ''
-        }
+            console.log(targetContainer.querySelectorAll('canvas'))
 
-        $(`.ui.tiny.modal#${modId}`).modal('setting', 'transition', 'vertical flip').modal('toggle')
-    }
+            i = 0
 
-    let logOut = async () => {
-        formData = new FormData()
-
-        formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
-
-        await fetch('api/logOut', {
-            body: formData,
-            method: 'POST'
-        }).then((response) => {
-            if (response.redirected) {
-                window.location.href = response.url
+            for (canvas of document.querySelectorAll('canvas')) {
+                console.log(canvas)
+                draw(canvas, jsonResponse[i]['nump'])
+                i ++
             }
         })
-    }
-
-    let addADevice = async () => {
-        formData = new FormData($('.ui.tiny.modal#addADevice form')[0])
-
-        formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
-
-        await fetch('api/addADevice', {
-            body: formData,
-            method: 'POST'
-        }).then(async (result) => {
-            await result.json().then((jsonResponse) => {
-                notify(formData.get('nump'), jsonResponse)
-                col('addADevice')
-            })
-        })
-    }
-
-    let notify = async (nump, jsonResponse) => {
-        $.toast({
-            displayTime: 2000,
-            title: `A new device`,
-            message: `Device ${nump} is being registered`,
-        })
-
-        await sleep(2000)
-
-        $('.ui.tiny.modal#showDevicePassword .header').text(`Password for ${nump}`)
-        $('.ui.tiny.modal#showDevicePassword #pasd').val(jsonResponse['pasd'])
-        tog('showDevicePassword')
-    }
-
-    let copyToClipboard = (input) => {
-        input.select()
-        input.setSelectionRange(0, 99999)
-
-        navigator.clipboard.writeText(input.value)
-        alert('copied ' + input.value)
-    }
-
-    let sleep = (ms) => {
-        clearInterval(sleepSetTimeout_ctrl);
-        return new Promise(resolve => sleepSetTimeout_ctrl = setTimeout(resolve, ms));
-    }
-
-    let getAllDevices = async () => {
-        await fetch('/api/getAllDevices').then(async (response) => {
-            await response.json().then((jsonResponse) => {
-                targetContainer = document.querySelector('#cont');
-
-                for (let device of jsonResponse) {
-                    content = document.querySelector('template#device').content.cloneNode(true);
-                    content.querySelector('.header').text = `Device ${device['nump']}`
-                    
-                    targetContainer.appendChild(document.importNode(content, true));
-                }
-
-                console.log(targetContainer.querySelectorAll('canvas'))
-
-                i = 0
-
-                for (canvas of document.querySelectorAll('canvas')) {
-                    console.log(canvas)
-                    draw(canvas, jsonResponse[i]['nump'])
-                    i ++
-                }
-            })
-        })
-    }
-
-    let draw = (canvas, text) => {
-        let ctx = canvas.getContext('2d');
-        let img = new Image();
-        
-        img.addEventListener("load", ()=>{
-            ctx.drawImage(img,0,5, 200, 40);
-            ctx.font = '26px arial';
-            ctx.fillText(text, 50, 34);
-        });
-        
-        img.src = "{% static 'nump.png' %}";
-    }
-
-    $('.ui.search')
-        .search({
-            apiSettings: {
-            url: '/api/getADevice?searchText={query}'
-        },
-        fields: {
-            results : 'devices',
-            title   : 'nump',
-            url     : 'urln'
-        },
-        minCharacters : 3
     })
+}
 
-    getAllDevices()
+let draw = (canvas, text) => {
+    let ctx = canvas.getContext('2d');
+    let img = new Image();
+    
+    img.addEventListener("load", ()=>{
+        ctx.drawImage(img,0,5, 200, 40);
+        ctx.font = '26px arial';
+        ctx.fillText(text, 50, 34);
+    });
+    
+    img.src = "{% static 'nump.png' %}";
+}
+
+$('.ui.search')
+    .search({
+        apiSettings: {
+        url: '/api/getADevice?searchText={query}'
+    },
+    fields: {
+        results : 'devices',
+        title   : 'nump',
+        url     : 'urln'
+    },
+    minCharacters : 3
+})
+
+getAllDevices()
 </script>
 {% endblock content %}

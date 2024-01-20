@@ -14,3 +14,4 @@ class Device(models.Model):
     firs = models.BooleanField()
     lati = models.TextField()
     long = models.TextField()
+    plat = models.TextField()

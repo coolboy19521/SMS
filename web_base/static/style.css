@@ -1,0 +1,7 @@
+* {
+    border: 0!important;
+}
+
+.ui.left.visible.sidebar, .ui.right.visible.sidebar {
+    box-shadow: none!important;
+}

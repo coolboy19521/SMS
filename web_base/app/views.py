@@ -28,10 +28,13 @@ def device(request, q):
     return redirect('login')
 
 def deviceHome(request):
-    if request.session['deviceLoggedIn']:
+    if request.session.get('deviceLoggedIn', False):
         print('hey')
 
-        return render(request, 'deviceHome.html', {'deviceId': request.session['deviceId']})
+        return render(request, 'deviceHome.html', {
+            'deviceId': request.session['deviceId'],
+            'firs': request.session['firs']
+        })
 
     return redirect('login')
 

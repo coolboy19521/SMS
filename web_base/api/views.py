@@ -36,7 +36,6 @@ def adminLogIn(request):
 
 @api_view(['POST'])
 def deviceLogIn(request):
-    print(request.POST.get('nump'))
     device = Device.objects.get(nump = request.POST.get('nump'))
 
     if device:
@@ -45,6 +44,7 @@ def deviceLogIn(request):
         if check_password(request.POST.get('pasd'), pasd):
             request.session['deviceLoggedIn'] = True
             request.session['deviceId'] = device.id
+            request.session['firs'] = device.firs
 
             return redirect('deviceHome')
 
@@ -69,8 +69,6 @@ def getAllDevices(request):
 def getADevice(request):
     searchText = request.GET.get('searchText')
 
-    print(searchText)
-
     devices = Device.objects.filter(Q(nump__icontains = searchText) | Q(date__icontains = searchText) | Q(time__icontains = searchText))
 
     for device in devices:
@@ -88,7 +86,32 @@ def getSpecificDevice(request, q):
     return Response(serializer.data)
 
 @api_view(['POST'])
-def updateDeviceGPS(request, sidd):
-    print(sidd, request.POST.get('latitude'), request.POST.get('longitude'))
+def updateDeviceGPS(request, id):
+    latitude, longitude = request.POST.get('latitude'), request.POST.get('longitude')
+
+    device = Device.objects.get(id = id)
+    device.lati = latitude
+    device.long = longitude
+    
+    device.save()
 
     return Response('ok')
+
+@api_view(['POST'])
+def changeDevicePassword(request, id):
+    if request.session.get('deviceId', None) == id:
+        device = Device.objects.get(id = id)
+        device.pasd = make_password(request.POST.get('new_pasd'))
+        device.firs = False
+
+        request.session['firs'] = False
+
+        device.save()
+
+    return redirect('deviceHome')
+
+@api_view(['POST'])
+def deviceLogOut(request):
+    request.session['deviceLoggedIn'] = False
+
+    return redirect('login')
