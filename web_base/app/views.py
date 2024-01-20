@@ -31,7 +31,7 @@ def deviceHome(request):
     if request.session['deviceLoggedIn']:
         print('hey')
 
-        return render(request, 'base.html')
+        return render(request, 'deviceHome.html', {'deviceId': request.session['deviceId']})
 
     return redirect('login')
 

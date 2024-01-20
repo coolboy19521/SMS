@@ -12,3 +12,5 @@ class Device(models.Model):
     pasd = models.TextField()
     urln = models.TextField()
     firs = models.BooleanField()
+    lati = models.TextField()
+    long = models.TextField()

@@ -8,5 +8,6 @@ urlpatterns = [
     path('logOut', logOut),
     path('getAllDevices', getAllDevices),
     path('getADevice', getADevice),
-    path('getSpecificDevice/<str:q>', getSpecificDevice)
+    path('getSpecificDevice/<str:q>', getSpecificDevice),
+    path('updateDeviceGPS/<int:sidd>', updateDeviceGPS)
 ]

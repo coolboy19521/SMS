@@ -137,7 +137,7 @@
 
         formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
 
-        await fetch('api/logOut', {
+        await fetch('../api/logOut', {
             body: formData,
             method: 'POST'
         }).then((response) => {

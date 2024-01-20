@@ -86,3 +86,9 @@ def getSpecificDevice(request, q):
     serializer = DeviceSerializer(device, many = False)
 
     return Response(serializer.data)
+
+@api_view(['POST'])
+def updateDeviceGPS(request, sidd):
+    print(sidd, request.POST.get('latitude'), request.POST.get('longitude'))
+
+    return Response('ok')

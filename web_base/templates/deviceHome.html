@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Device Home
+{% endblock title %}
+
+{% block content %}
+{% csrf_token %}
+<div id="map"></div>
+<script>
+const watchId = navigator.geolocation.watchPosition(async position => {
+    const { latitude, longitude } = position.coords;
+    let formData = new FormData()
+
+    formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
+    formData.append('latitude', latitude)
+    formData.append('longitude', longitude)
+
+    fetch("/api/updateDeviceGPS/{{ deviceId }}", {
+        body: formData,
+        method: 'POST',
+    })
+
+    console.log('hey')
+});
+</script>
+{% endblock content %}
