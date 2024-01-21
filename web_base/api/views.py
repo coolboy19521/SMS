@@ -12,12 +12,13 @@ from .models import *
 
 @api_view(['POST'])
 def addADevice(request):
+    print(request.POST, request.data)
     pasd = uuid4().hex[: 8]
 
     Device(
-        nump = request.POST['nump'],
+        nump = request.data['nump'],
         pasd = make_password(pasd),
-        urln = f"/devices/{request.POST['nump']}",
+        urln = f"/devices/{request.data['nump']}",
         firs = True
     ).save()
 
@@ -137,8 +138,9 @@ def deviceDelete(request, id):
     return redirect('devices')
 
 @api_view(['POST'])
-def addRobot(request):
-    lati, long = request.POST.get('lati'), request.POST.get('long')
+def addARobot(request):
+    print(request.data)
+    lati, long = request.data['lati'], request.data['long']
 
     robot = Robot(
         lati = lati,
