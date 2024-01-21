@@ -68,10 +68,40 @@
     </div>
     <div class="pusher">
         <div class="ui basic segment">
-            {% for device in devices %}
-                
-            {% endfor %}
-            <button class="ui button">Follow</button>
+            <div class="ui search">
+                <div class="ui icon input">
+                    <input class="prompt" type="text" placeholder="Search device..." name="searchText" style="width:300px">
+                    <i class="search icon"></i>
+                </div>
+                <div class="results"></div>
+            </div>
+            <template class="device">
+                <div class="ui divided items fme">
+                    <div class="item">
+                        <canvas width="220" height="120"></canvas>
+                        <div class="content">
+                            <a class="header">12 Years a Slave</a>
+                            <div class="meta">
+                                <span class="cinema">Device <span id="did"></span></span>
+                            </div>
+                            <div class="description">
+                                <div id="badges" style="display:none">
+                                    <div class="ui label" id="plat">IOS</div>
+                                    <div class="ui label" id="gpsButton" onclick="console.log('fuck')"><i class="globe icon"></i><span id="gps">42, 49</span></div>
+                                </div>
+                                <div id="no-badge" style="display: none;">
+                                    <div class="ui label" id="plat">No login</div>
+                                </div>
+                            </div>
+                            <div class="extra">
+                                <div class="ui primary button" id="edit">Edit</div>
+                                <div class="ui negative button" id="delete">Delete</div>
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
         </div>
     </div>
     <div class="ui visible right vertical sidebar menu">

@@ -58,7 +58,7 @@ let addADevice = async () => {
 
     formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
 
-    await fetch('api/addADevice', {
+    await fetch('../api/addADevice', {
         body: formData,
         method: 'POST'
     }).then(async (result) => {
@@ -75,6 +75,21 @@ let deviceLogOut = async() => {
     formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
 
     await fetch('../api/deviceLogOut', {
+        body: formData,
+        method: 'POST'
+    }).then((response) => {
+        if (response.redirected) {
+            window.location.href = response.url
+        }
+    })
+}
+
+let deviceDelete = async (id) => {
+    formData = new FormData()
+
+    formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
+
+    fetch(`../api/deviceDelete/${id}`, {
         body: formData,
         method: 'POST'
     }).then((response) => {

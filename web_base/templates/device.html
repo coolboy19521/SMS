@@ -71,26 +71,33 @@
         <div class="ui basic segment" id="cont">
             <div class="ui search">
                 <div class="ui icon input">
-                    <input class="prompt" type="text" placeholder="Github Repositories..." name="searchText">
+                    <input class="prompt" type="text" placeholder="Search device..." name="searchText">
                     <i class="search icon"></i>
                 </div>
                 <div class="results"></div>
             </div>
-            <template id="device">
-                <div class="ui divided items">
+            <template class="device">
+                <div class="ui divided items fme">
                     <div class="item">
                         <canvas width="220" height="120"></canvas>
                         <div class="content">
                             <a class="header">12 Years a Slave</a>
                             <div class="meta">
-                                <span class="cinema">Union Square 14</span>
+                                <span class="cinema">Device <span id="did"></span></span>
                             </div>
                             <div class="description">
-                                <p></p>
+                                <div id="badges" style="display:none">
+                                    <div class="ui label" id="plat">IOS</div>
+                                    <div class="ui label" id="gpsButton" onclick="console.log('fuck')"><i class="globe icon"></i><span id="gps">42, 49</span></div>
+                                </div>
+                                <div id="no-badge" style="display: none;">
+                                    <div class="ui label" id="plat">No login</div>
+                                </div>
                             </div>
                             <div class="extra">
-                                <div class="ui label">IMAX</div>
-                                <div class="ui label"><i class="globe icon"></i> Additional Languages</div>
+                                <div class="ui primary button" id="edit">Edit</div>
+                                <div class="ui negative button" id="delete">Delete</div>
+                                <br>
                             </div>
                         </div>
                     </div>
@@ -105,21 +112,57 @@
     </div>
 </div>
 <script>
+var deviceF = false
+
 let getSpecificDevice = async () => {
     await fetch('/api/getSpecificDevice/{{ device }}').then(async (response) => {
         await response.json().then((jsonResponse) => {
-            targetContainer = document.querySelector('#cont');
-
             device = jsonResponse
 
-            content = document.querySelector('template#device').content.cloneNode(true);
-            content.querySelector('.header').text = `Device ${device['nump']}`
-            
-            targetContainer.appendChild(document.importNode(content, true));
+            if (!deviceF) {
+                targetContainer = document.querySelector('#cont');
+                content = document.querySelector('template.device').content.cloneNode(true);
+            } else {
+                content = document.querySelector('.fme')
+            }
 
-            draw(document.querySelector('canvas'), jsonResponse['nump'])
+            content.querySelector('.header').text = `Device ${device['nump']}`
+            content.querySelector('#plat').innerHTML = device['plat']
+            content.querySelector('#did').innerHTML = device['id']
+            content.querySelector('#gps').innerHTML = `${device['lati'].substring(0, 5)}°, ${device['long'].substring(0, 5)}°`
+            content.querySelector('#gpsButton').setAttribute('onclick', `liveLocation(${device['lati']}, ${device['long']})`)
+            content.querySelector('#edit').setAttribute('onclick', `liveLocation(${device['lati']}, ${device['long']})`)
+            content.querySelector('#delete').setAttribute('onclick', `deviceDelete(${device['id']})`)
+        
+            if (!device['firs']) {
+                content.querySelector('#badges').style.display = 'block'
+                content.querySelector('#no-badge').style.display = 'none'
+            } else {
+                content.querySelector('#badges').style.display = 'none'
+                content.querySelector('#no-badge').style.display = 'block'
+            }
+
+            if (!deviceF) {
+                targetContainer.appendChild(document.importNode(content, true));
+                draw(document.querySelector('canvas'), jsonResponse['nump'])
+            }
         })
+
+        deviceF = true
     })
+}
+
+let draw = (canvas, text) => {
+    let ctx = canvas.getContext('2d');
+    let img = new Image();
+    
+    img.addEventListener("load", ()=>{
+        ctx.drawImage(img,0,5, 200, 40);
+        ctx.font = '26px arial';
+        ctx.fillText(text, 50, 34);
+    });
+    
+    img.src = "{% static 'nump.png' %}";
 }
 
 $('.ui.search')
@@ -135,6 +178,6 @@ $('.ui.search')
     minCharacters : 3
 })
 
-getSpecificDevice()
+setInterval(getSpecificDevice, 500)
 </script>
 {% endblock content %}

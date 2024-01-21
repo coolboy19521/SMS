@@ -177,21 +177,6 @@ let liveLocation = (lati, long) => {
     console.log(map.innerHTML)
 }
 
-let deviceDelete = async (id) => {
-    formData = new FormData()
-
-    formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
-
-    fetch(`/api/deviceDelete/${id}`, {
-        body: formData,
-        method: 'POST'
-    }).then((response) => {
-        if (response.redirected) {
-            window.location.href = response.url
-        }
-    })
-}
-
 let draw = (canvas, text) => {
     let ctx = canvas.getContext('2d');
     let img = new Image();
@@ -215,7 +200,7 @@ $('.ui.search')
         title   : 'nump',
         url     : 'urln'
     },
-    minCharacters : 3
+    minCharacters : 1
 })
 
 setInterval(getAllDevices, 500)
