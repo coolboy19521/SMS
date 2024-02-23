@@ -1,73 +1,21 @@
-from Module import MainClass, HandDetector, FaceDetector, ColorDetector, CascadeObjectDetector, SSDObjectDetector, FaceRecognizer, PoseDetector
-from cv2 import CascadeClassifier, VideoWriter, VideoWriter_fourcc, imshow, waitKey
+from cv2 import imshow, waitKey, circle, putText, FONT_HERSHEY_COMPLEX_SMALL
+from Module import MainClass, PoseDetector
 from imutils.video import VideoStream
-from threading import Thread
-from os import listdir
 
-MainClass.WebcamControl = VideoStream(0, resolution = (640, 480), framerate = 32)
+MainClass.WebcamControl = VideoStream(0, resolution = (640, 480), framerate = 20)
 MainClass.Webcam = MainClass.WebcamControl.start()
 
-MainClass.LowerColor, MainClass.UpperColor = (32, 123, 53), (71, 215, 156)
+det = PoseDetector().ProccessMultiple
 
-Species = {
-    0 : 'Common',
-    1 : 'ColorDetector',
-    2 : 'CascadeObjectDetector',
-    3 : 'FaceDetector',
-    4 : 'FaceRecognizer',
-    5 : 'PoseDetector',
-    6 : 'SSDObjectDetector',
-    7 : 'HandDetector',
-    8 : 'HandDetectorAngle'
-}
-
-Detectors = {
-    'Common' : MainClass().Process,
-    'ColorDetector' : ColorDetector().Process,
-    'CascadeObjectDetector' : CascadeObjectDetector().Process,
-    'FaceDetector' : FaceDetector().Process,
-    'FaceRecognizer' : FaceRecognizer().Process,
-    'PoseDetector' : PoseDetector().Process,
-    'SSDObjectDetector' : SSDObjectDetector().Process,
-    'HandDetector' : HandDetector().Process,
-    'HandDetectorAngle': HandDetector().ProcessAngle
-}
-
-MultiIndices = [5]
-MainClass.Cascades = [CascadeClassifier('Data/Cascades/haarcascade_eye.xml'), CascadeClassifier('Data/Cascades/haarcascade_profileface.xml')]
-MainClass.ColorValues = [[(41, 51, 48), (81, 255, 255)]]
-
-MultiDetectors = [Detectors[Species[IndexSmall]] for IndexSmall in MultiIndices]
-
-if (len(MultiIndices) > 1):
-    In = VideoWriter(f'Videos/Mix/Input/{len(listdir(f"Videos/Mix/Input"))}.avi', VideoWriter_fourcc('M','J','P','G'), 10, (640, 480))
-    Out = VideoWriter(f'Videos/Mix/Output/{len(listdir(f"Videos/Mix/Output"))}.avi', VideoWriter_fourcc('M','J','P','G'), 10, (640, 480))
-else:
-    In = VideoWriter(f'Videos/{Species[MultiIndices[0]]}/Input/{len(listdir(f"Videos/{Species[MultiIndices[0]]}/Input"))}.avi', VideoWriter_fourcc('M','J','P','G'), 10, (640, 480))
-    Out = VideoWriter(f'Videos/{Species[MultiIndices[0]]}/Output/{len(listdir(f"Videos/{Species[MultiIndices[0]]}/Output"))}.avi', VideoWriter_fourcc('M','J','P','G'), 10, (640, 480))
-
-while (waitKey(1) & 0xFF != ord('q')):
-    MainClass.FaceNotDetectedBBox = 1
+while (waitKey(5) != ord('q')):
     frame = MainClass.Webcam.read()
-    In.write(frame)
-    Threads = []
 
-    MainClass.Log = [frame]
-    MainClass.Angle = {}
-    for Detector in MultiDetectors:
-        frameToUse = frame.copy()
-        # Detector(frameToUse)
-        ThreadNow = Thread(target = Detector, args = (frameToUse, (1, 1)))
-        Threads.append(ThreadNow)
-        ThreadNow.start()
+    cs = det(frame)
 
-    for ThreadIndex in Threads:
-        ThreadIndex.join()
+    for ix, (cx, cy) in enumerate(cs):
+        circle(frame, (cx, cy), 50, (0, 0, 255), 1)
+        putText(frame, f"{ix}", (cx - 25, cy + 25), 1, FONT_HERSHEY_COMPLEX_SMALL, (0, 0, 0), 1)
 
-    Out.write(MainClass.Log[0])
-    print(MainClass.Angle)
-    imshow("Matrix", MainClass.Log[0])
+    imshow("Matrix", frame)
 
-In.release()
-Out.release()
 MainClass.WebcamControl.stop()

@@ -1,10 +1,10 @@
-from cv2 import bitwise_and, inRange, findContours, contourArea, drawContours, moments, circle, line, COLOR_BGR2HSV, RETR_TREE, CHAIN_APPROX_SIMPLE, cvtColor, imencode, COLOR_BGR2GRAY, imwrite, resize, imread, rectangle, putText, FONT_HERSHEY_PLAIN, COLOR_BGR2RGB, CascadeClassifier, dnn_DetectionModel, FONT_HERSHEY_COMPLEX_SMALL, namedWindow, getTrackbarPos, createTrackbar, flip, imshow, resize, COLOR_GRAY2BGR
+from cv2 import bitwise_and, bitwise_not, convexHull, fillConvexPoly, inRange, findContours, contourArea, drawContours, moments, circle, line, COLOR_BGR2HSV, RETR_TREE, CHAIN_APPROX_SIMPLE, cvtColor, imencode, COLOR_BGR2GRAY, imwrite, resize, imread, rectangle, putText, FONT_HERSHEY_PLAIN, COLOR_BGR2RGB, CascadeClassifier, dnn_DetectionModel, FONT_HERSHEY_COMPLEX_SMALL, namedWindow, getTrackbarPos, createTrackbar, flip, imshow, resize, COLOR_GRAY2BGR, waitKey
 from cv2.face import EigenFaceRecognizer_create
+from numpy import array, hstack, ones, roll, zeros, uint8
 from os import mkdir, listdir, walk, rename
 from mediapipe.python import solutions
 from string import ascii_lowercase
 from imutils import grab_contours
-from numpy import array, hstack
 from math import sqrt, acos, pi
 from random import choice
 
@@ -387,11 +387,11 @@ class HandDetector(Hands, MainClass):
 class PoseDetector(Pose, MainClass):
     def __init__(
         self,
-        static_image_mode = False,
-        model_complexity = 1,
-        smooth_landmarks = True,
+        static_image_mode = True,
+        model_complexity = 2,
+        smooth_landmarks = False,
         enable_segmentation = False,
-        smooth_segmentation = True,
+        smooth_segmentation = False,
         min_detection_confidence = 0.5,
         min_tracking_confidence = 0.5
     ):
@@ -405,33 +405,67 @@ class PoseDetector(Pose, MainClass):
             min_tracking_confidence
         )
 
-    def Process(self, Frame, Draw = (0, 0)):
+    def ProccessMultiple(self, Frame):
+        frame = Frame.copy()
+        cs = []
+
+        while ((res := self.Process(frame))[0]):
+            landmark_coords = [(int(l.x * frame.shape[1]), int(l.y * frame.shape[0]) + 10) for l in res[1]]
+
+            hull = convexHull(array(landmark_coords))
+
+            mask = zeros(frame.shape[:2], dtype = uint8)
+            fillConvexPoly(mask, hull, (255))
+
+            mask = bitwise_not(mask)
+            ls = roll(mask, -50, axis = 1)
+            rs = roll(mask, 50, axis = 1)
+            us1 = roll(ls, -50, axis = 0)
+            us2 = roll(rs, -50, axis = 0)
+            us2 = roll(mask, -50, axis = 0)
+
+            masks = [mask, ls, rs, us1, us2]
+
+            for mask in masks:
+                frame = bitwise_and(frame, frame, mask = mask)
+
+            # frame = bitwise_and(frame, frame, mask = ls)
+            # frame = bitwise_and(frame, frame, mask = rs)
+
+            cs.append(self.FaceDot(res[1]))
+
+            # imshow("mat", frame)
+            # waitKey(0)
+
+        return cs
+
+    def Process(self, Frame):
         frame = cvtColor(Frame, COLOR_BGR2RGB)
         result_landmarks = self.process(frame).pose_landmarks
-        returnedValue = 0
-
-        indices = {}
 
         if (result_landmarks):
-            returnedValue = 1
-            for index, member in enumerate(result_landmarks.landmark):
-                indices[index] = (member.x, member.y)
+            return True, result_landmarks.landmark
 
-        if (Draw[0] and Draw[1]):
-            drawing_util.draw_landmarks(Frame, result_landmarks, pose.POSE_CONNECTIONS)
-        elif (Draw[0]):
-            drawing_util.draw_landmarks(Frame, result_landmarks)
+        return False, -1
 
-        if (len(MainClass.Log) > 0):
-            MainClass.Log[0] = bitwise_and(MainClass.Log[0], Frame)
-        else:
-            MainClass.Log.append(Frame)
+    def FaceDot(self, landmark):
+        mxx, mxy, mnx, mny = -1, -1, 1e18, 1e18
+        
+        for i in range(10):
+            mxx = max(mxx, landmark[i].x)
+            mnx = min(mnx, landmark[i].x)
+            mxy = max(mxy, landmark[i].y)
+            mny = min(mny, landmark[i].y)
 
-        MainClass.Angle['Pose'] = returnedValue * [-90, 90]
-        MainClass.Tasks.append((indices, ))
+        mxx, mnx = int(mxx * 640), int(mnx * 640)
+        mxy, mny = int(mxy * 480), int(mny * 480)
 
-        return Frame, indices, returnedValue
+        cx, cy = mnx + (mxx - mnx) // 2, mny + (mxy - mny) // 2
 
+        return cx, cy
+
+    def Normalize(self, a, b, x):
+        return max(min(x, b), a)
 
 class BasicDataCollector():
     def generateRandom(self, length):
@@ -497,7 +531,7 @@ class SSDObjectDetector(dnn_DetectionModel, MainClass):
         self.Setup()
 
     def Setup(self):
-        self.setInputSize(320, 320)
+        self.setInputSize(600, 400)
         self.setInputScale(1 / 127.5)
         self.setInputMean((127.5, 127.5, 127.5))
         self.setInputSwapRB(1)

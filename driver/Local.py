@@ -33,7 +33,7 @@ Detectors = {
     'HandDetectorAngle': HandDetector().ProcessAngle
 }
 
-MultiIndices = [5]
+MultiIndices = [3]
 MainClass.Cascades = [CascadeClassifier('Data/Cascades/haarcascade_eye.xml'), CascadeClassifier('Data/Cascades/haarcascade_profileface.xml')]
 MainClass.ColorValues = [[(41, 51, 48), (81, 255, 255)]]
 
