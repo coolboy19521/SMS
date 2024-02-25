@@ -62,8 +62,11 @@ while (waitKey(1) != ord('q')):
             nc[e] = 0
 
     for e in d:
-        if (10 == nc[e] and dis(e, (640, 480)) < dis(e, (0, 0))):
-            h += 1
+        if (10 == nc[e]):
+            if (dis(e, (640, 480)) < dis(e, (0, 0))):
+                h += 1
+            else:
+                h -= 1
 
     d = [e for e in d if (10 != nc[e])]
     nc = {k : nc[k] for k in nc if (nc[k] != 10)}
