@@ -13,11 +13,7 @@ Pose = pose.Pose
 
 LETTERS = ascii_lowercase
 
-class MainClass():
-    WebcamControl = None
-    Webcam = None
-
-class PoseDetector(Pose, MainClass):
+class PoseDetector(Pose):
     def __init__(
         self,
         static_image_mode = True,
@@ -25,8 +21,8 @@ class PoseDetector(Pose, MainClass):
         smooth_landmarks = False,
         enable_segmentation = False,
         smooth_segmentation = False,
-        min_detection_confidence = 0.5,
-        min_tracking_confidence = 0.5
+        min_detection_confidence = 0.7,
+        min_tracking_confidence = 0.7
     ):
         super().__init__(
             static_image_mode,
