@@ -3,7 +3,6 @@ import time
 import requests
 
 URL = "http://192.168.206.120"
-AWB = True
 
 cap = cv2.VideoCapture(URL + ":81/stream")
 

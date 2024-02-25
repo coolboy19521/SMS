@@ -104,6 +104,7 @@
                                 </div>
                             </div>
                             <div class="extra">
+                                <div class="ui primary button" id="view">View</div>
                                 <div class="ui negative button" id="delete">Delete</div>
                                 <br>
                             </div>
@@ -139,7 +140,7 @@ let getAllDevices = async () => {
                 content.querySelector('#did').innerHTML = device['id']
                 content.querySelector('#gps').innerHTML = `${device['lati'].substring(0, 5)}°, ${device['long'].substring(0, 5)}°`
                 content.querySelector('#gpsButton').setAttribute('onclick', `liveLocation(${device['lati']}, ${device['long']})`)
-                content.querySelector('#edit').setAttribute('onclick', `liveLocation(${device['lati']}, ${device['long']})`)
+                content.querySelector('#view').setAttribute('onclick', `liveLocation(${device['lati']}, ${device['long']})`)
                 content.querySelector('#delete').setAttribute('onclick', `deviceDelete(${device['id']})`)
 
                 if (!device['firs']) {
@@ -169,8 +170,6 @@ let liveLocation = (lati, long) => {
     tog('liveLocation')
 
     map = document.querySelector('#liveLocation #map')
-
-    console.log(device)
 
     map.innerHTML = `<iframe width="${document.querySelector('#liveLocation').offsetWidth}" height="450" src="https://maps.google.com/maps?q=${lati},${long}&amp;z=15&amp;output=embed"></iframe>`
     console.log(map.innerHTML)

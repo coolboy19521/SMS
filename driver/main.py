@@ -1,6 +1,10 @@
 from cv2 import VideoCapture, destroyAllWindows, imshow, waitKey, circle, putText, FONT_HERSHEY_COMPLEX_SMALL, CAP_PROP_FPS
 from Module import PoseDetector
+from requests import get
 from math import sqrt
+
+def set_resolution(url, index):
+    get(url + "/control?var=framesize&val={}".format(index))
 
 def dis(l, r):
     x1, y1 = l
@@ -8,8 +12,11 @@ def dis(l, r):
 
     return sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
+# url = "http://192.168.206.120"
+
+# cam = VideoCapture(url + ':81/stream')
+# set_resolution(5)
 cam = VideoCapture(0)
-cam.set(CAP_PROP_FPS, 32)
 
 det = PoseDetector().ProccessMultiple
 d, nc, h = [], {}, 0
@@ -65,8 +72,6 @@ while (waitKey(1) != ord('q')):
         if (None == sta[e]):
             d.append(e)
             nc[e] = 0
-
-    print(len(d), d, nc)
 
     for ix, (cx, cy) in enumerate(cs):
         circle(frame, (cx, cy), 50, (0, 0, 255), 1)

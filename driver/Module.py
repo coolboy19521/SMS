@@ -1,17 +1,9 @@
 from cv2 import bitwise_and, bitwise_not, convexHull, cvtColor, fillConvexPoly, COLOR_BGR2RGB
 from numpy import array, roll, zeros, uint8
 from mediapipe.python import solutions
-from string import ascii_lowercase
-
-drawing_util = solutions.drawing_utils
-
-hands = solutions.hands
-Hands = solutions.hands.Hands
 
 pose = solutions.pose
 Pose = pose.Pose
-
-LETTERS = ascii_lowercase
 
 class PoseDetector(Pose):
     def __init__(
