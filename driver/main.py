@@ -80,6 +80,8 @@ while (waitKey(1) != ord('q')):
         circle(frame, (cx, cy), 50, (0, 0, 255), 1)
         putText(frame, f"{ix}", (cx - 25, cy + 25), 1, FONT_HERSHEY_COMPLEX_SMALL, (0, 0, 0), 1)
 
+    h = max(h, 0)
+
     putText(frame, f"H: {h}, D: {len(d)}", (50, 100), 1, FONT_HERSHEY_COMPLEX_SMALL, (0, 0, 0), 1)
 
     imshow("Matrix", frame)

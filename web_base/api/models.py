@@ -5,6 +5,7 @@ class Robot(models.Model):
     time = models.TimeField(auto_now_add = True)
     lati = models.TextField()
     long = models.TextField()
+    perc = models.TextField(null = True, blank = True)
 
 class Device(models.Model):
     date = models.DateField(auto_now_add = True)
