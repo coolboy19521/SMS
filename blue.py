@@ -4,15 +4,15 @@ from serial import Serial
 from time import sleep
 
 def send(msg):
-    s.write(dumps(msg).encode('utf-8'))
+    s.write(dumps(msg).replace("'", '"').encode('utf-8'))
 
 def read(size):
-    return loads(s.read(size).decode('utf-8'))
+    return s.read(size).decode('utf-8')
 
-s = Serial('/dev/rfcomm0', 9600, timeout = 0.4)
+s = Serial('/dev/rfcomm0', 9600, timeout = .5)
 
-api_gurl = '127.0.0.1:8000/api/getARobot'
-api_purl = '127.0.0.1:8000/api/addARobot'
+api_gurl = 'http://127.0.0.1:8000/api/getARobot'
+api_purl = 'http://127.0.0.1:8000/api/addARobot'
 
 send({'msg' : 'start'})
 
@@ -20,14 +20,26 @@ c = True
 
 while (True):
     data = read(2048)
-    print(data)
+
+    while ('{' not in data):
+        data += read(2048)
+
+    data = data[data.index('{') :]
+
+    while ('}' not in data):
+        data += read(2048)
+
+    ndata = data[: data.index('}') + 1]
+    data = data[data.index('}') + 1 :]
+
+    ndata = loads(ndata)
 
     if (c):
         post(api_purl, json = {
-            'lati' : data['lati'],
-            'long' : data['long'],
-            'f1' : data['f1'],
-            'f2' : data['f2']
+            'lati' : ndata['lati'],
+            'long' : ndata['long'],
+            'f1' : ndata['f1'],
+            'f2' : ndata['f2']
         })
 
         with open('driver/flag.txt', 'w') as dest:
@@ -35,7 +47,11 @@ while (True):
 
         c = False
 
-    tose = get(api_gurl)
+    tose = get(api_gurl).json()
+    tose = {
+        'perc' : tose['perc'] or '0',
+        'fpsf' : tose['fpsf'] or '0'
+    }
 
     send(tose)
-    sleep(.5)
+    sleep(0.5)
