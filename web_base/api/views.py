@@ -163,6 +163,20 @@ def updatePercFpsf(request):
 
     return Response('ok')
 
+@api_view(['POST'])
+def updateLatiLongF1F2(request):
+    lati, long = request.data['lati'], request.data['long']
+    f1, f2 = request.data['f1'], request.data['f2']
+
+    robot = Robot.objects.all()[0]
+
+    robot.lati, robot.long = lati, long
+    robot.f1, robot.f2 = f1, f2
+
+    robot.save()
+
+    return Response('ok')
+
 @api_view(['GET'])
 def getARobot(request):
     return Response(RobotSerializer(Robot.objects.all()[0], many = False).data)

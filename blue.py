@@ -11,8 +11,11 @@ def read(size):
 
 s = Serial('/dev/rfcomm0', 9600, timeout = .5)
 
-api_gurl = 'http://127.0.0.1:8000/api/getARobot'
-api_purl = 'http://127.0.0.1:8000/api/addARobot'
+api_url = 'http://127.0.0.1:8000/api/'
+
+api_gurl = api_url + 'getARobot'
+api_purl = api_url + 'addARobot'
+api_uurl = api_url + 'addARobot'
 
 send({'msg' : 'start'})
 
@@ -46,6 +49,13 @@ while (True):
             dest.write('1')
 
         c = False
+    else:
+        post(api_uurl, json = {
+            'lati' : ndata['lati'],
+            'long' : ndata['long'],
+            'f1' : ndata['f1'],
+            'f2' : ndata['f2']
+        })
 
     tose = get(api_gurl).json()
     tose = {
