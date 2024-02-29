@@ -129,7 +129,7 @@ let getAllRobots = async () => {
                     content = document.querySelectorAll('.fme')[devices.indexOf(device['id'])]
                 }
 
-                content.querySelector('.header').text = `Robot #${device['id'] + 1}`
+                content.querySelector('.header').text = `Robot #${device['id']}`
                 content.querySelector('#plat').innerHTML = device['brok']
                 content.querySelector('#did').innerHTML = device['id']
                 content.querySelector('#gps').innerHTML = `${device['lati'].substring(0, 5)}°, ${device['long'].substring(0, 5)}°`

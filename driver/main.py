@@ -22,8 +22,8 @@ while (not flag):
 with open('flag.txt', 'w') as dest:
     dest.write('0')
 
-url = "http://192.168.98.120"
 api_url = "http://192.168.1.129:8000/api/updatePerc"
+url = "http://192.168.98.120"
 
 cam = VideoCapture(url + ':81/stream')
 set_resolution(url, 8)

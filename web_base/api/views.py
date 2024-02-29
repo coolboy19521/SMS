@@ -186,7 +186,7 @@ def getAllRobots(request):
     robots = Robot.objects.all()
 
     for robot in robots:
-        if (int(robot.f1) >= 90 or int(robot.f2) >= 90):
+        if (int(robot.f1) >= 420 or int(robot.f2) >= 420):
             robot.brok = "Broken"
         else:
             robot.brok = "Not broken"

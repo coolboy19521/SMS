@@ -15,7 +15,7 @@ api_url = 'http://127.0.0.1:8000/api/'
 
 api_gurl = api_url + 'getARobot'
 api_purl = api_url + 'addARobot'
-api_uurl = api_url + 'addARobot'
+api_uurl = api_url + 'updateLatiLongF1F2'
 
 send({'msg' : 'start'})
 
@@ -37,6 +37,8 @@ while (True):
 
     ndata = loads(ndata)
 
+    ndata['f2'] = str(int(ndata['f2']) - 400)
+
     if (c):
         post(api_purl, json = {
             'lati' : ndata['lati'],
@@ -49,6 +51,7 @@ while (True):
             dest.write('1')
 
         c = False
+        print(1)
     else:
         post(api_uurl, json = {
             'lati' : ndata['lati'],
@@ -57,10 +60,19 @@ while (True):
             'f2' : ndata['f2']
         })
 
+        print(ndata['f1'], ndata['f2'])
+
     tose = get(api_gurl).json()
+
+    if (None == tose['perc']):
+        tose['perc'] = '0'
+    
+    if (None == tose['fpsf']):
+        tose['fpsf'] = '0'
+
     tose = {
-        'perc' : tose['perc'] or '0',
-        'fpsf' : tose['fpsf'] or '0'
+        'perc' : tose['perc'],
+        'fpsf' : tose['fpsf']
     }
 
     send(tose)
