@@ -50,7 +50,7 @@ class PoseDetector(Pose):
             for mask in masks:
                 frame = bitwise_and(frame, frame, mask = mask)
 
-            cs.append(self.FaceDot(res[1]))
+            cs.append(self.FaceDot(frame, res[1]))
 
         return cs
 
@@ -63,7 +63,7 @@ class PoseDetector(Pose):
 
         return False, -1
 
-    def FaceDot(self, landmark):
+    def FaceDot(self, frame, landmark):
         mxx, mxy, mnx, mny = -1, -1, 1e18, 1e18
         
         for i in range(10):
@@ -72,8 +72,8 @@ class PoseDetector(Pose):
             mxy = max(mxy, landmark[i].y)
             mny = min(mny, landmark[i].y)
 
-        mxx, mnx = int(mxx * 640), int(mnx * 640)
-        mxy, mny = int(mxy * 480), int(mny * 480)
+        mxx, mnx = int(mxx * frame.shape[1]), int(mnx * frame.shape[1])
+        mxy, mny = int(mxy * frame.shape[0]), int(mny * frame.shape[0])
 
         cx, cy = mnx + (mxx - mnx) // 2, mny + (mxy - mny) // 2
 

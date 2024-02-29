@@ -14,5 +14,7 @@ urlpatterns = [
     path('deviceLogOut', deviceLogOut),
     path('updateDevicePlatform/<int:id>', updateDevicePlatform),
     path('deviceDelete/<int:id>', deviceDelete),
-    path('addARobot', addARobot)
+    path('addARobot', addARobot),
+    path('updatePercFpsf', updatePercFpsf),
+    path('getARobot', getARobot)
 ]

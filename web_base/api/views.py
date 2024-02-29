@@ -139,14 +139,30 @@ def deviceDelete(request, id):
 
 @api_view(['POST'])
 def addARobot(request):
-    print(request.data)
     lati, long = request.data['lati'], request.data['long']
+    f1, f2 = request.data['f1'], request.data['f2']
 
     robot = Robot(
         lati = lati,
-        long = long
+        long = long,
+        f1 = f1,
+        f2 = f2
     )
 
     robot.save()
 
     return Response('ok')
+
+@api_view(['POST'])
+def updatePercFpsf(request):
+    perc, fpsf = request.data['perc'], request.data['fpsf']
+    robot = Robot.objects.all()[0]
+
+    robot.perc, robot.fpsf = perc, fpsf
+    robot.save()
+
+    return Response('ok')
+
+@api_view(['GET'])
+def getARobot(request):
+    return Response(RobotSerializer(Robot.objects.all()[0], many = False).data)

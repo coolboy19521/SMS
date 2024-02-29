@@ -1,7 +1,8 @@
-from cv2 import VideoCapture, destroyAllWindows, imshow, waitKey, circle, putText, FONT_HERSHEY_COMPLEX_SMALL, CAP_PROP_FPS
+from cv2 import VideoCapture, destroyAllWindows, imshow, waitKey, circle, putText, FONT_HERSHEY_COMPLEX_SMALL
 from Module import PoseDetector
-from requests import get
-from math import sqrt
+from requests import get, post
+from math import sqrt, ceil
+from time import time
 
 def set_resolution(url, index):
     get(url + "/control?var=framesize&val={}".format(index))
@@ -12,15 +13,25 @@ def dis(l, r):
 
     return sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 
-# url = "http://192.168.206.120"
+flag = False
 
-# cam = VideoCapture(url + ':81/stream')
-# set_resolution(5)
-cam = VideoCapture(0)
+while (not flag):
+    with open('flag.txt', 'r') as dest:
+        flag = bool(dest.read())
+
+with open('flag.txt', 'w') as dest:
+    dest.write('0')
+
+url = "http://192.168.98.120"
+api_url = "http://192.168.1.129:8000/api/updatePerc"
+
+cam = VideoCapture(url + ':81/stream')
+set_resolution(url, 8)
 
 det = PoseDetector().ProccessMultiple
-d, nc, h = [], {}, 0
+d, nc, h, f = [], {}, 0, 0
 
+s = time()
 inf = 1e18
 
 while (waitKey(1) != ord('q')):
@@ -81,10 +92,18 @@ while (waitKey(1) != ord('q')):
         putText(frame, f"{ix}", (cx - 25, cy + 25), 1, FONT_HERSHEY_COMPLEX_SMALL, (0, 0, 0), 1)
 
     h = max(h, 0)
+    e = time()
+    f = ceil(1 / (e - s))
+    s = e
 
-    putText(frame, f"H: {h}, D: {len(d)}", (50, 100), 1, FONT_HERSHEY_COMPLEX_SMALL, (0, 0, 0), 1)
+    putText(frame, f"H: {h}, D: {len(d)}, F: {f}", (50, 100), 1, FONT_HERSHEY_COMPLEX_SMALL, (0, 0, 0), 1)
 
     imshow("Matrix", frame)
+
+    post(api_url, json = {
+        'perc' : h,
+        'fpsf' : f,
+    })
 
 cam.release()
 destroyAllWindows()
