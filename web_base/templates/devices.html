@@ -140,8 +140,8 @@ let getAllDevices = async () => {
                 content.querySelector('#plat').innerHTML = device['plat']
                 content.querySelector('#did').innerHTML = device['id']
                 content.querySelector('#gps').innerHTML = `${device['lati'].substring(0, 5)}°, ${device['long'].substring(0, 5)}°`
-                content.querySelector('#gpsButton').setAttribute('onclick', `liveLocation(${device['lati']}, ${device['long']})`)
-                content.querySelector('#view').setAttribute('onclick', `liveLocation(${device['lati']}, ${device['long']})`)
+                content.querySelector('#gpsButton').setAttribute('onclick', `liveLocation({'lati': "${device['lati']}", 'long' : "${device['long']}", 'nump' : "${device['nump']}"})`)
+                content.querySelector('#view').setAttribute('onclick', `liveLocation({'lati': "${device['lati']}", 'long' : "${device['long']}", 'nump' : "${device['nump']}"})`)
                 content.querySelector('#delete').setAttribute('onclick', `deviceDelete(${device['id']})`)
 
                 if (!device['firs']) {
@@ -167,12 +167,15 @@ let getAllDevices = async () => {
     })
 }
 
-let liveLocation = (lati, long) => {
+let liveLocation = (device) => {
     tog('liveLocation')
 
+    document.querySelector('#liveLocation .header').innerHTML = `Location of ${device['nump']}`    
     map = document.querySelector('#liveLocation #map')
 
-    map.innerHTML = `<iframe width="${document.querySelector('#liveLocation').offsetWidth}" height="450" src="https://maps.google.com/maps?q=${lati},${long}&amp;z=15&amp;output=embed"></iframe>`
+    url = `https://maps.google.com/maps?q=${device['lati']},${device['long']}&amp;z=15&amp;output=embed`
+
+    map.innerHTML = `<iframe width="${document.querySelector('#liveLocation').offsetWidth}" height="450" src="${url}"></iframe>`
     console.log(map.innerHTML)
 }
 

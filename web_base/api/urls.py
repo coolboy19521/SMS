@@ -17,5 +17,6 @@ urlpatterns = [
     path('addARobot', addARobot),
     path('updatePercFpsf', updatePercFpsf),
     path('getARobot', getARobot),
-    path('updateLatiLongF1F2', updateLatiLongF1F2)
+    path('updateLatiLongF1F2', updateLatiLongF1F2),
+    path('getAllRobots', getAllRobots)
 ]

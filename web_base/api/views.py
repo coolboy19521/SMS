@@ -180,3 +180,17 @@ def updateLatiLongF1F2(request):
 @api_view(['GET'])
 def getARobot(request):
     return Response(RobotSerializer(Robot.objects.all()[0], many = False).data)
+
+@api_view(['GET'])
+def getAllRobots(request):
+    robots = Robot.objects.all()
+
+    for robot in robots:
+        if (int(robot.f1) >= 90 or int(robot.f2) >= 90):
+            robot.brok = "Broken"
+        else:
+            robot.brok = "Not broken"
+        
+        robot.save()
+
+    return Response(RobotSerializer(robots, many = True).data)

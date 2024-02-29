@@ -9,6 +9,7 @@ class Robot(models.Model):
     fpsf = models.TextField(null = True, blank = True)
     f1 = models.TextField(null = True, blank = True)
     f2 = models.TextField(null = True, blank = True)
+    brok = models.TextField(null = True, blank = True)
 
 class Device(models.Model):
     date = models.DateField(auto_now_add = True)
