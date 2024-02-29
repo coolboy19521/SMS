@@ -17,7 +17,7 @@ flag = False
 
 while (not flag):
     with open('flag.txt', 'r') as dest:
-        flag = bool(dest.read())
+        flag = int(dest.read())
 
 with open('flag.txt', 'w') as dest:
     dest.write('0')
