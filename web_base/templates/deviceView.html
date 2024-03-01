@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Robot Detailed View
+{% endblock title %}
+
+{% block content %}
+<style>
+    html, body {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .col-12 {
+        height: 100%;
+    }
+
+    .first-div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .first-div h2,
+    .first-div p {
+        margin-bottom: 1em;
+    }
+
+    .first-div p {
+        line-height: 1.5;
+    }
+</style>
+
+
+<div class="ui tiny modal" id="addADevice">
+    <div class="header">Add a device</div>
+    <div class="content">
+        <form class="ui large form initial" method="POST">
+            <div class="field">
+                <div class="ui left icon input">
+                    <i class="user icon"></i>
+                    <input type="text" name="nump" placeholder="Number plate" autocomplete="off" id="nump" spellcheck="false">
+                </div>
+            </div>
+            <div class="ui error message"></div>
+        </form>
+    </div>
+    <div class="basic actions">
+        <button class="ui basic button" onclick="addADevice()">Save</button>
+        <div class="ui basic button" onclick="col('addADevice')">Cancel</div>
+    </div>
+</div>
+<div class="ui tiny modal" id="logOut">
+    <div class="header">Log out</div>
+    <div class="content">
+        <p class="ui text">Are you sure you want to log out?</p>
+    </div>
+    <div class="basic actions">
+        <button class="positive ui button" onclick="logOut()">Yes</button>
+        <div class="negative ui button" onclick="col('logOut')">No</div>
+    </div>
+</div>
+<div class="ui tiny modal" id="liveLocation">
+    <div class="header">Location of </div>
+    <div class="content" style="padding:0">
+        <div id="map"></div>
+    </div>
+    <div class="basic actions">
+        <div class="ui basic button" onclick="col('liveLocation')">Close</div>
+    </div>
+</div>
+<div class="ui tiny modal" id="showDevicePassword">
+    <div class="header">Log out</div>
+    <div class="content">
+        <span class="ui small grey text" style="margin: 10px;">
+            * Copy this password and send it to the owner of the device
+        </span>
+        <div class="ui center aligned container" style="margin-top: 20px;">
+            <div class="ui action input">
+                <input type="text" id="pasd" disabled>
+                <button class="ui button" onclick="copyToClipboard(document.querySelector('#pasd'))">Copy</button>
+            </div>
+        </div>
+    </div>
+    <div class="basic actions">
+        <div class="ui basic button" onclick="col('showDevicePassword')">Close</div>
+    </div>
+</div>
+<div class="ui bottom attached segment pushable">
+    <div class="ui visible inverted left vertical sidebar menu">
+        <a class="item" href="{% url 'robots' %}">
+            <i class="home icon"></i>
+            Robots
+        </a>
+        <a class="active item" href="{% url 'devices' %}">
+            <i class="block layout icon"></i>
+            Devices
+        </a>
+        <a class="item" onclick="tog('logOut')">
+            <i class="calendar icon"></i>
+            Log out
+        </a>
+    </div>
+    <div class="pusher">
+        <div class="ui basic segment" id="cont">
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+            <div class="row">
+                <div class="first-div">
+                    <div id="info_boxes" style="width: 100%;">
+                        <div class="row mb-4" style="padding-top: 35px;">
+                            <div class="col-1"></div>
+                            <div class="col-3 p-1 border border-3 rounded"><h5 class="mt-3">Current Coors</h5><p id="cur_coors"></p></div>
+                            <div class="col-1"></div>
+                            <div class="col-3 p-1 border border-3 rounded"><h5 class="mt-3">Person Count</h5><p id="perc"></p></div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-1"></div>
+                            <div class="col-3 p-1 border border-3 rounded"><h5 class="mt-3">Flex 1</h5><p id="f1"></p></div>
+                            <div class="col-1"></div>
+                            <div class="col-3 p-1 border border-3 rounded"><h5 class="mt-3">Flex 2</h5><p id="f2"></p></div>
+                        </div>
+                        <div class="row mb-5">
+                            <div class="col-1"></div>
+                            <div class="col-3 p-2 border border-3 rounded"><h5 class="mt-3">FPS</h5><p id="fpsf"></p></div>
+                            <div class="col-1"></div>
+                            <div class="col-3 p-2 border border-3 rounded"><h5 class="mt-3">Robot</h5><p id="robot"></p></div>
+                        </div>
+                        <div class="row m-4">
+                            <div class="col-2"></div>
+                            <div class="col-5">
+                                <div id="liveLocation">
+                                    <div id="map" style="padding-top:40px;">
+                                        <iframe width="600" height="450" src="https://maps.google.com/maps?q=23,27&amp;z=20&amp;output=embed"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ui visible right vertical sidebar menu">
+        <div class="ui basic segment">
+            <button class="ui left floated button" onclick="tog('addADevice')" style="width: 100%; margin-bottom: 10px;">+ Add a device</button>
+        </div>
+    </div>
+</div>
+<script>
+    let getARobot = async () => {
+        await fetch('/api/getARobot').then(async (response) => {
+            await response.json().then(async (robot) => {
+                document.querySelector('#cur_coors').innerHTML = `${robot['lati'] / 100}°, ${robot['long'] / 100}°`
+                document.querySelector('#perc').innerHTML = robot['perc']
+                document.querySelector('#f1').innerHTML = robot['f1']
+                document.querySelector('#f2').innerHTML = robot['f2']
+                document.querySelector('#fpsf').innerHTML = robot['fpsf']
+                document.querySelector('#robot').innerHTML = `#${robot['id']}`
+            })
+        })
+    }
+
+    setInterval(getARobot, 500)
+</script>
+{% endblock content %}

@@ -38,4 +38,7 @@ def deviceHome(request):
 
     return redirect('login')
 
+def deviceView(request):
+    return render(request, 'deviceView.html')
+
 favicon = RedirectView.as_view(url='/static/favicon.ico', permanent=True)

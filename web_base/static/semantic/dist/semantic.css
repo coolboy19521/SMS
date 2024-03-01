@@ -67578,7 +67578,7 @@ body.pushable > .pusher {
         User Overrides
 *******************************/
 /*!
- * # Fomantic-UI 2.9.3 - Modal
+ * # Fomantic-UI 2.9.3 - modal
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -67588,7 +67588,7 @@ body.pushable > .pusher {
  */
 
 /*******************************
-             Modal
+             modal
 *******************************/
 
 .ui.modal {
@@ -67786,7 +67786,7 @@ body.pushable > .pusher {
        Responsive
 -------------------- */
 
-/* Modal Width */
+/* modal Width */
 
 @media only screen and (max-width: 767.98px) {
   .ui.modal:not(.fullscreen) {

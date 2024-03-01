@@ -8,5 +8,6 @@ urlpatterns = [
     path('devices', devices, name = 'devices'),
     path('devices/<str:q>', device),
     path('deviceHome', deviceHome, name = 'deviceHome'),
-    path('favicon.ico', favicon)
+    path('favicon.ico', favicon),
+    path('deviceView', deviceView, name = 'deviceView'),
 ]

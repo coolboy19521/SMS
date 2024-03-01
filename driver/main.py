@@ -22,11 +22,12 @@ while (not flag):
 with open('flag.txt', 'w') as dest:
     dest.write('0')
 
-api_url = "http://192.168.1.129:8000/api/updatePerc"
-url = "http://192.168.98.120"
+api_url = "http://127.0.0.1:8000/api/updatePercFpsf"
+# url = "http://192.168.98.120"
 
-cam = VideoCapture(url + ':81/stream')
-set_resolution(url, 8)
+# cam = VideoCapture(url + ':81/stream')
+# set_resolution(url, 8)
+cam = VideoCapture(0)
 
 det = PoseDetector().ProccessMultiple
 d, nc, h, f = [], {}, 0, 0
