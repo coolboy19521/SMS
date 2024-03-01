@@ -9,7 +9,7 @@ def send(msg):
 def read(size):
     return s.read(size).decode('utf-8')
 
-s = Serial('/dev/rfcomm0', 9600, timeout = .5)
+s = Serial('/dev/rfcomm0', 9600, timeout = 1)
 
 api_url = 'http://127.0.0.1:8000/api/'
 
@@ -74,6 +74,8 @@ while (True):
         'perc' : tose['perc'],
         'fpsf' : tose['fpsf']
     }
+
+    print(tose)
 
     send(tose)
     sleep(0.5)
