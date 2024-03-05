@@ -69,8 +69,9 @@ while (waitKey(1) != ord('q')):
         if (e not in ps):
             nc[e] += 1
         else:
-            nc.pop(sta[e])
-            nc[e] = 0
+            if (sta[e] in nc):
+                nc.pop(sta[e])
+                nc[e] = 0
 
     for e in d:
         if (10 == nc[e]):

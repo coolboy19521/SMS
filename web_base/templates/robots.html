@@ -98,7 +98,7 @@
                             </div>
                             <div class="extra">
                                 <div class="ui primary button" id="view">View</div>
-                                <div class="ui success button" id="view">More</div>
+                                <a class="ui success button" id="view" href="{% url 'deviceView' %}" target="blank">More</a>
                                 <br>
                             </div>
                         </div>
@@ -123,6 +123,9 @@ let getAllRobots = async () => {
             targetContainer = document.querySelector('#cont');
 
             for (let device of jsonResponse) {
+                device['lati'] = `${Number(device['lati']) / 100}`
+                device['long'] = `${Number(device['long']) / 100}`
+
                 if (!devices.includes(device['id'])) {
                     content = document.querySelector('template.device').content.cloneNode(true);
                 } else {

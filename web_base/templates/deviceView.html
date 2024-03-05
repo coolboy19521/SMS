@@ -121,18 +121,18 @@ Robot Detailed View
                             <div class="col-1"></div>
                             <div class="col-3 p-1 border border-3 rounded"><h5 class="mt-3">Flex 2</h5><p id="f2"></p></div>
                         </div>
-                        <div class="row mb-5">
+                        <div class="row mb-4">
                             <div class="col-1"></div>
-                            <div class="col-3 p-2 border border-3 rounded"><h5 class="mt-3">FPS</h5><p id="fpsf"></p></div>
+                            <div class="col-3 p-2 border border-3 rounded"><h5>FPS</h5><p id="fpsf"></p></div>
                             <div class="col-1"></div>
-                            <div class="col-3 p-2 border border-3 rounded"><h5 class="mt-3">Robot</h5><p id="robot"></p></div>
+                            <div class="col-3 p-2 border border-3 rounded"><h5>Robot</h5><p id="robot"></p></div>
                         </div>
-                        <div class="row m-4">
+                        <div class="row m-3">
                             <div class="col-2"></div>
                             <div class="col-5">
                                 <div id="liveLocation">
-                                    <div id="map" style="padding-top:40px;">
-                                        <iframe width="600" height="450" src="https://maps.google.com/maps?q=23,27&amp;z=20&amp;output=embed"></iframe>
+                                    <div id="map" style="padding-top: 40px;">
+                                        <iframe width="600" height="450" src="https://maps.google.com/maps?q=40.39,49.84&amp;z=20&amp;output=embed"></iframe>
                                     </div>
                                 </div>
                             </div>
@@ -153,7 +153,7 @@ Robot Detailed View
     let getARobot = async () => {
         await fetch('/api/getARobot').then(async (response) => {
             await response.json().then(async (robot) => {
-                document.querySelector('#cur_coors').innerHTML = `${robot['lati'] / 100}°, ${robot['long'] / 100}°`
+                document.querySelector('#cur_coors').innerHTML = `${Number(robot['lati'] / 100)}°, ${Number(robot['long']) / 100}°`
                 document.querySelector('#perc').innerHTML = robot['perc']
                 document.querySelector('#f1').innerHTML = robot['f1']
                 document.querySelector('#f2').innerHTML = robot['f2']

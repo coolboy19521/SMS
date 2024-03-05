@@ -34,15 +34,15 @@ while (True):
 
     ndata = data[: data.index('}') + 1]
     data = data[data.index('}') + 1 :]
-
+    
     ndata = loads(ndata)
 
-    ndata['f2'] = str(int(ndata['f2']) - 400)
+    ndata['f2'] = str(int(ndata['f2']) - 370)
 
     if (c):
         post(api_purl, json = {
-            'lati' : ndata['lati'],
-            'long' : ndata['long'],
+            'lati' : 4039,
+            'long' : 4984,
             'f1' : ndata['f1'],
             'f2' : ndata['f2']
         })
@@ -54,8 +54,8 @@ while (True):
         print(1)
     else:
         post(api_uurl, json = {
-            'lati' : ndata['lati'],
-            'long' : ndata['long'],
+            'lati' : 4039,
+            'long' : 4984,
             'f1' : ndata['f1'],
             'f2' : ndata['f2']
         })

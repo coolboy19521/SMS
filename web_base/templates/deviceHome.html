@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}
     Device Home
@@ -6,6 +7,15 @@
 
 {% block content %}
 {% csrf_token %}
+<div class="ui tiny modal" id="liveLocation">
+    <div class="header">Location of </div>
+    <div class="content" style="padding:0">
+        <div id="map"></div>
+    </div>
+    <div class="basic actions">
+        <div class="ui basic button" onclick="col('liveLocation')">Close</div>
+    </div>
+</div>
 <div class="ui tiny modal" id="changeDevicePassword">
     <div class="header">Change password</div>
     <div class="content">
@@ -46,14 +56,119 @@
         </a>
     </div>
     <div class="pusher">
-        <div class="ui basic segment">
-            <button class="ui button">Follow</button>
+        <div class="ui basic segment" id="cont">
+            <template class="device">
+                <div class="ui divided items fme" style="padding-bottom: 10px;">
+                    <div class="item">
+                        <canvas width="220" height="120"></canvas>
+                        <div class="content">
+                            <a class="header" id="header">12 Years a Slave</a>
+                            <div class="meta">
+                                <span class="cinema">Robot <span id="did"></span></span>
+                            </div>
+                            <div class="description">
+                                <div id="badges">
+                                    <div class="ui label" id="plat">IOS</div>
+                                    <div class="ui label" id="gpsButton" onclick="console.log('fuck')"><i class="globe icon"></i><span id="gps">42, 49</span></div>
+                                </div>
+                                <div id="no-badge" style="display: none;">
+                                    <div class="ui label" id="plat">No login</div>
+                                </div>
+                            </div>
+                            <div class="extra">
+                                <div class="ui primary button" id="view">View</div>
+                                <div class="ui success button" id="view">More</div>
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
         </div>
     </div>
 </div>
 <script>
+var devices = []
+var draw_f = {}
+
+let getAllRobots = async () => {
+    await fetch('/api/getAllRobots').then(async (response) => {
+        await response.json().then((jsonResponse) => {
+            targetContainer = document.querySelector('#cont');
+
+            for (let device of jsonResponse) {
+                device['lati'] = `${Number(device['lati']) / 100}`
+                device['long'] = `${Number(device['long']) / 100}`
+
+                if (device['brok'] != "Broken") {
+                    continue;
+                }
+
+                if (!devices.includes(device['id'])) {
+                    content = document.querySelector('template.device').content.cloneNode(true);
+                } else {
+                    content = document.querySelectorAll('.fme')[devices.indexOf(device['id'])]
+                }
+
+                content.querySelector('#header').text = `Robot #${device['id']}`
+                content.querySelector('#plat').innerHTML = device['brok']
+                content.querySelector('#did').innerHTML = device['id']
+                content.querySelector('#gps').innerHTML = `${device['lati'].substring(0, 5)}°, ${device['long'].substring(0, 5)}°`
+                content.querySelector('#gpsButton').setAttribute('onclick', `liveLocation({'lati': "${device['lati']}", 'long' : "${device['long']}", 'nump' : "Robot #${device['id']}"})`)
+                content.querySelector('#view').setAttribute('onclick', `liveLocation({'lati': "${device['lati']}", 'long' : "${device['long']}", 'nump' : "Robot #${device['id']}"})`)
+
+                if (!devices.includes(device['id'])) {
+                    targetContainer.appendChild(document.importNode(content, true))
+                    draw_f[device['id']] = document.querySelectorAll('canvas').length - 1
+                    draw(document.querySelectorAll('canvas')[document.querySelectorAll('canvas').length - 1], device['brok'])
+                } else {
+                    draw(document.querySelectorAll('canvas')[draw_f[device['id']]], device['brok'])
+                }
+            }
+
+            devices = []
+
+            for (let device of jsonResponse) {
+                if ('Broken' == device['brok']) {
+                    devices.push(device['id'])
+                }
+            }
+        })
+    })
+}
+
+let liveLocation = (device) => {
+    tog('liveLocation')
+
+    document.querySelector('#liveLocation .header').innerHTML = `Location of ${device['nump']}`    
+    map = document.querySelector('#liveLocation #map')
+
+    url = `https://maps.google.com/maps?q=${device['lati']},${device['long']}&amp;z=15&amp;output=embed`
+
+    map.innerHTML = `<iframe width="${document.querySelector('#liveLocation').offsetWidth}" height="450" src="${url}"></iframe>`
+    console.log(map.innerHTML)
+}
+
+let draw = (canvas, text) => {
+    let ctx = canvas.getContext('2d');
+    let img = new Image();
+
+    img.addEventListener("load", ()=>{
+        ctx.drawImage(img,0,5, 160, 80);
+    });
+
+    if ('Broken' == text) {
+        img.src = "{% static 'broken.jpeg' %}";
+    } else {
+        img.src = "{% static 'non-broken.jpeg' %}"
+    }
+}
+
+setInterval(getAllRobots, 500)
+
 const watchId = navigator.geolocation.watchPosition(async position => {
     const { latitude, longitude } = position.coords
+    console.log(latitude, longitude)
     formData = new FormData()
 
     formData.append('csrfmiddlewaretoken', document.querySelector("input[name='csrfmiddlewaretoken']").value)
