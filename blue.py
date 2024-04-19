@@ -72,8 +72,13 @@ while (True):
 
     tose = {
         'perc' : tose['perc'],
-        'fpsf' : tose['fpsf']
+        'fpsf' : tose['fpsf'],
     }
+
+    if (400 <= int(ndata['f1']) or 400 <= int(ndata['f2'])):
+        tose['brea'] = 't'
+    else:
+        tose['brea'] = 'f'
 
     print(tose)
 
