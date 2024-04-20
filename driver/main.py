@@ -25,8 +25,9 @@ with open('flag.txt', 'w') as dest:
 api_url = "http://127.0.0.1:8000/api/updatePercFpsf"
 url = "http://192.168.130.120"
 
-cam = VideoCapture(url + ':81/stream')
-set_resolution(url, 8)
+# cam = VideoCapture(url + ':81/stream')
+# set_resolution(url, 8)
+cam = VideoCapture(0)
 
 det = PoseDetector().ProccessMultiple
 d, nc, h, f = [], {}, 0, 0

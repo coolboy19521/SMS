@@ -41,8 +41,8 @@ while (True):
 
     if (c):
         post(api_purl, json = {
-            'lati' : 4039,
-            'long' : 4984,
+            'lati' : 3633,
+            'long' : 3034,
             'f1' : ndata['f1'],
             'f2' : ndata['f2']
         })
@@ -54,8 +54,8 @@ while (True):
         print(1)
     else:
         post(api_uurl, json = {
-            'lati' : 4039,
-            'long' : 4984,
+            'lati' : 3633,
+            'long' : 3034,
             'f1' : ndata['f1'],
             'f2' : ndata['f2']
         })
