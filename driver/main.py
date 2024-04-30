@@ -1,8 +1,9 @@
-from cv2 import VideoCapture, destroyAllWindows, imshow, waitKey, circle, putText, FONT_HERSHEY_COMPLEX_SMALL
+from cv2 import VideoCapture, VideoWriter, VideoWriter_fourcc, destroyAllWindows, imshow, waitKey, circle, putText, FONT_HERSHEY_COMPLEX_SMALL
 from Module import PoseDetector
 from requests import get, post
 from math import sqrt, ceil
 from time import time
+from os import listdir
 
 def set_resolution(url, index):
     get(url + "/control?var=framesize&val={}".format(index))
@@ -21,6 +22,8 @@ while (not flag):
 
 with open('flag.txt', 'w') as dest:
     dest.write('0')
+
+wrtr = VideoWriter(f'videos/video_{len(listdir("videos"))}.avi', VideoWriter_fourcc('M','J','P','G'), 10, (640, 480))
 
 api_url = "http://127.0.0.1:8000/api/updatePercFpsf"
 url = "http://192.168.130.120"
@@ -100,6 +103,7 @@ while (waitKey(1) != ord('q')):
 
     putText(frame, f"H: {h}, D: {len(d)}, F: {f}", (50, 100), 1, FONT_HERSHEY_COMPLEX_SMALL, (0, 0, 0), 1)
 
+    wrtr.write(frame)
     imshow("Matrix", frame)
 
     post(api_url, json = {
