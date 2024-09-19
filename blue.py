@@ -1,4 +1,5 @@
 from requests import get, post
+from datetime import datetime
 from json import loads, dumps
 from serial import Serial
 from time import sleep
@@ -8,6 +9,10 @@ def send(msg):
 
 def read(size):
     return s.read(size).decode('utf-8')
+
+def now():
+    dt = datetime.now()
+    return f"{dt.day}.{dt.month} {dt.hour}:{dt.minute}"
 
 s = Serial('/dev/rfcomm0', 9600, timeout = 1)
 
@@ -73,6 +78,7 @@ while (True):
     tose = {
         'perc' : tose['perc'],
         'fpsf' : tose['fpsf'],
+        'noww' : now()
     }
 
     if (400 <= int(ndata['f1']) or 400 <= int(ndata['f2'])):

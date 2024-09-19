@@ -1,13 +1,14 @@
-# include "SoftwareSerial.h"
-# include "ArduinoJson.h"
+#include "SoftwareSerial.h"
+#include "ArduinoJson.h"
 
-# define ANALOG_IN_PIN A4
-# define SIREN A10
-# define RELAY 39
-# define F1 A0
-# define F2 A1
+#define TEMP_ANALOG_IN A5
+#define ANALOG_IN_PIN A4
+#define SIREN A10
+#define RELAY 35
+#define F1 A2
+#define F2 A3
 
-String fpsf, pcnt;
+String fpsf, pcnt, noww;
 
 const size_t CAPACITY = JSON_OBJECT_SIZE(1);
 char in[2048];
@@ -21,6 +22,10 @@ float R1 = 30000.0;
 float R2 = 7500.0;
 
 float ref_voltage = 5.0;
+
+int temp_analog_out;
+int temp_revised_out;
+int celcius;
 
 int la, lo, f1, f2;
 int adc_value;
@@ -46,6 +51,11 @@ void syscall() {
   nexti.write(0xff);
   nexti.write(0xff);
   nexti.write(0xff);
+}
+
+void timeShow() {
+  nexti.print("tempot.txt=\"" + noww + String("\""));
+  syscall();
 }
 
 void battery() {
@@ -110,6 +120,10 @@ void count() {
   syscall();
 }
 
+void updateTemp() {
+  nexti.print("tempo.txt=\"" + String(celcius) + String("\""));
+}
+
 void update_vals() {
   if (Serial.available()) {
     memset(in, '\0', 2048);
@@ -128,6 +142,9 @@ void update_vals() {
         const char * pers = doc["perc"];
         const char * fpss = doc["fpsf"];
         const char * brea = doc["brea"];
+        const char * nows = doc["noww"];
+
+        noww = nows;
 
         if (String(brea) == "t") {
           br = true;
@@ -159,7 +176,16 @@ void send_vals() {
   serializeJson(doc, Serial);
 }
 
+int thermistor(int temp_raw) {
+  double temp;
+  temp = log(10240000 / temp_raw - 10000);
+  temp = 1 / (0.001129148 + ( 0.000234125 * temp ) + (0.0000000876741 * temp * temp * temp));
+  temp = temp - 273.15;
+  return temp;
+}
+
 void setup() {
+  pinMode(TEMP_ANALOG_IN, INPUT);
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(SIREN, OUTPUT);
   pinMode(RELAY, OUTPUT);
@@ -174,6 +200,13 @@ void setup() {
 }
 
 void loop() {
+  temp_analog_out = analogRead(TEMP_ANALOG_IN);
+  temp_revised_out = map(temp_analog_out, 0, 1023, 1023, 0);
+
+  celcius = thermistor(temp_revised_out);
+
+  updateTemp();
+
   adc_value = analogRead(ANALOG_IN_PIN);
 
   adc_voltage  = (adc_value * ref_voltage) / 1024.0;
@@ -183,6 +216,7 @@ void loop() {
 
   updateFlexes();
   update_vals();
+  timeShow();
   send_vals();
   battery();
   count();

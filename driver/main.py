@@ -1,12 +1,9 @@
 from cv2 import VideoCapture, VideoWriter, VideoWriter_fourcc, destroyAllWindows, imshow, waitKey, circle, putText, FONT_HERSHEY_COMPLEX_SMALL
 from Module import PoseDetector
-from requests import get, post
+from requests import post
 from math import sqrt, ceil
 from time import time
 from os import listdir
-
-def set_resolution(url, index):
-    get(url + "/control?var=framesize&val={}".format(index))
 
 def dis(l, r):
     x1, y1 = l
@@ -26,11 +23,9 @@ with open('flag.txt', 'w') as dest:
 wrtr = VideoWriter(f'videos/video_{len(listdir("videos"))}.avi', VideoWriter_fourcc('M','J','P','G'), 10, (640, 480))
 
 api_url = "http://127.0.0.1:8000/api/updatePercFpsf"
-url = "http://192.168.130.120"
+url = "rtsp://admin:BRGOII@192.168.247.55:554/Streaming/Channels/102"
 
-# cam = VideoCapture(url + ':81/stream')
-# set_resolution(url, 8)
-cam = VideoCapture(0)
+cam = VideoCapture(url + ':81/stream')
 
 det = PoseDetector().ProccessMultiple
 d, nc, h, f = [], {}, 0, 0

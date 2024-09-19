@@ -10,9 +10,9 @@ class PoseDetector(Pose):
         self,
         static_image_mode = True,
         model_complexity = 2,
-        smooth_landmarks = False,
-        enable_segmentation = False,
-        smooth_segmentation = False,
+        smooth_landmarks = True,
+        enable_segmentation = True,
+        smooth_segmentation = True,
         min_detection_confidence = 0.7,
         min_tracking_confidence = 0.7
     ):
