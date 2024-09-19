@@ -6,7 +6,7 @@ cffi==1.16.0
 charset-normalizer==3.3.2
 contourpy==1.2.0
 cycler==0.12.1
-Django==5.0.1
+Django==5.0.8
 django-cors-headers==4.3.1
 djangorestframework==3.14.0
 flatbuffers==23.5.26
