@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Next-gen Museums
+{% endblock title %}
+
+{% block content %}
+    <div class="ui large top fixed hidden menu">
+        <div class="ui container">
+            <a class="item">Home</a>
+            <a class="item">Museums</a>
+            <a class="active item" href="{% url 'us' %}">Us</a>
+            <div class="right menu">
+            </div>
+        </div>
+    </div>
+
+    <div class="ui vertical sidebar menu left">
+        <a class="item">Home</a>
+        <a class="item">Museums</a>
+        <a class="active item" href="{% url 'us' %}">Us</a>
+        <a class="item">Add An Exhibit</a>
+    </div>
+
+<div class="pusher">
+    <div class="ui vertical masthead center aligned segment">
+        <div class="ui container">
+            <div class="ui large secondary  pointing menu">
+                <a class="toc item">
+                    <i class="sidebar icon"></i>
+                </a>
+                <a class="item" href="{% url 'home' %}">Home</a>
+                <a class="item" href="{% url 'museums' %}">Project</a>
+                <a class="active item" href="{% url 'us' %}">Us</a>
+            </div>
+        </div>
+        <div class="ui three stackable cards left aligned link container" style="margin-top: 30px;">
+<div class="ui card">
+  <div class="image">
+    <img height="300px" src="{% static 'ahmedreal.jpg' %}">
+  </div>
+  <div class="content">
+    <a class="header">Ahmed</a>
+    <div class="meta">
+      <span class="date">Programmer</span>
+    </div>
+    <div class="description">
+      Contributed to the programming
+      <ul>
+          <li>SAF '21 3rd</li>
+          <li>SAF '22 2nd</li>
+          <li>SAF '23 finalist</li>
+          <li>Teknofest Azerbaycan participant</li>
+          <li>Azercell Cup '21 1st</li>
+          <li>Azercell Cup '22 1st</li>
+          <li>Robofest '23 2nd</li>
+          <li>Start IT '23 1st</li>
+          <li>FLL '19 finalist</li>
+          <li>FLL '22 finalist</li>
+          <li>Respublika fenn olimpiadasi respublika birinciliyi informatika</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="ui card">
+  <div class="image">
+    <img height="300px" src="{% static 'eyyub.jpeg' %}">
+  </div>
+  <div class="content">
+    <a class="header">Eyyub</a>
+    <div class="meta">
+      <span class="date">Team Leader</span>
+    </div>
+    <div class="description">
+      Planned the working plot and managed the team-work
+        <ul>
+          <li>Sabahın alimleri 1.yer </li>
+          <li>Dünya Robot Olimpiyadası Azerbaijan 1.yer</li>
+          <li>Dünya Robot Olkmpiyadası Panama 7.yer</li>
+          <li>ISEF Texas, Dallas finalist</li>
+          <li>International Steam Festival 3.yer</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="ui card">
+  <div class="image">
+    <img height="300px" src="{% static 'omar.jpeg' %}">
+  </div>
+  <div class="content">
+    <a class="header">Omar</a>
+    <div class="meta">
+      <span class="date">Project Design</span>
+    </div>
+    <div class="description">
+      Contributed to the project design
+      <ul>
+          <li>Sabahın alimleri kimya 1.yer</li>
+          <li>Teknofest finalist</li>
+          <li>WRO Azerbaijan finalistli</li>
+          <li>ISEF finalist</li>
+      </ul>
+    </div>
+  </div>
+</div>
+        </div>
+    </div>
+    </div>
+{% endblock content %}

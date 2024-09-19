@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Admin Log in
+{% endblock title %}
+
+{% block content %}
+    <style type="text/css">
+        body > .grid {
+            height: 100%;
+        }
+        .column {
+            max-width: 450px;
+        }
+        html, body {
+            background-color: white!important;
+        }
+    </style>
+    <script>
+        $(document)
+          .ready(function() {
+            $('.ui.form')
+              .form({
+                fields: {
+                username: {
+                    identifier  : 'username',
+                    rules: [
+                      {
+                        type   : 'empty',
+                        prompt : 'Please enter your username'
+                      }
+                    ]
+                  },
+                  password: {
+                    identifier  : 'password',
+                    rules: [
+                      {
+                        type   : 'empty',
+                        prompt : 'Please enter your password'
+                      }
+                    ]
+                  }
+                }
+              })
+            ;
+          })
+        ;
+    </script>
+    <div class="ui middle aligned center aligned grid">
+        <div class="column">
+            <form class="ui large form initial" method="POST">
+                {% csrf_token %}
+                <div class="ui stacked segment">
+                    <div class="field">
+                    <div class="ui left icon input">
+                        <i class="user icon"></i>
+                        <input type="text" name="username" placeholder="Admin username" autocomplete="off">
+                    </div>
+                    </div>
+                    <div class="field">
+                    <div class="ui left icon input">
+                        <i class="lock icon"></i>
+                        <input type="password" name="password" placeholder="Password">
+                    </div>
+                    </div>
+                    <button type="submit" class="ui basic button" style="margin-top: 20px;">Log in <i class="right arrow icon"></i></button>
+                </div>
+                <div class="ui error message"></div>
+            </form>
+        </div>
+    </div>
+{% endblock content %}

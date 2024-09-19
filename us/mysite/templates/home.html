@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Next-gen Museums
+{% endblock title %}
+
+{% block content %}
+    <div class="ui large top fixed hidden menu">
+        <div class="ui container">
+            <a class="active item" href="{% url 'home' %}">Home</a>
+            <a class="item" href="{% url 'museums' %}">Project</a>
+            <a class="item" href="{% url 'us' %}">Us</a>
+            <div class="right menu">
+            </div>
+        </div>
+    </div>
+
+    <div class="ui vertical sidebar menu left">
+        <a class="active item" href="{% url 'home' %}">Home</a>
+        <a class="item" href="{% url 'museums' %}">Project</a>
+        <a class="item" href="{% url 'us' %}">Us</a>
+    </div>
+
+    <div class="pusher">
+        <div class="ui vertical masthead center aligned segment">
+            <div class="ui container">
+                <div class="ui large secondary inverted pointing menu">
+                    <a class="toc item">
+                    <i class="sidebar icon"></i>
+                    </a>
+                    <a class="active item" href="{% url 'home' %}">Home</a>
+                    <a class="item" href="{% url 'museums' %}">Project</a>
+                    <a class="item" href="{% url 'us' %}">Us</a>
+            </div>
+        </div>
+        <div class="ui text container">
+            <video autoplay muted loop id="bg-vid">
+                <source src="{% static 'video.mp4' %}" type="video/mp4">
+            </video>
+            <h1 class="ui inverted header">
+                Next-gen Design
+            </h1>
+            <h2 class="ui inverted header">Illusions come to life</h2>
+            <a class="ui inverted basic button" style="margin-top: 20px;" href="#about">About this project <i class="right arrow icon"></i></a>
+        </div>
+    </div>
+
+    <div class="ui vertical stripe segment" id="about">
+        <div class="ui middle aligned stackable grid container">
+        <div class="row">
+            <div class="eight wide column">
+            <h3 class="ui header">We Make Designing Much Easier</h3>
+            <p>Using hologram technology it is way easier to design all around the world. The only limitation for 3D design is your imagination and we want to destroy that limit as well!</p>
+            </div>
+            <div class="six wide right floated column">
+            <img src="{% static 'newpp.jpeg' %}" class="ui large bordered rounded image">
+            </div>
+        </div>
+        </div>
+    </div>
+
+
+    <div class="ui vertical stripe quote segment">
+        <div class="ui equal width stackable internally celled grid">
+        <div class="center aligned row">
+            <div class="column">
+            <h3>"What a Company"</h3>
+            <p>That is what they all say about us</p>
+            </div>
+            <div class="column">
+            <h3>"We'll make it easier to design."</h3>
+            <p>
+                <img src="{% static 'ahmed.jpg' %}" class="ui avatar image"> <b>Ahmed</b> A Simple Coder
+            </p>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div class="ui vertical stripe segment">
+        <div class="ui text container">
+        <h3 class="ui header">Who Are Whe?</h3>
+        <p>Ahmed, Eyyub, Omar. From different schools and grades. But the will to make design more trending than ever united them. They're the team JQD. Their hope of this project being evolved gave them a great motivation.</p>
+        <a class="ui large button">See Their Images</a>
+        <h4 class="ui horizontal header divider">
+            <a href="#">What Is The Research?</a>
+        </h4>
+        <h3 class="ui header">We Discussed the Project With the Top Designers</h3>
+        <p>Our discussions resulted in a very nice way. Our project is a need for designers to be much more productive. We are uniting the classical aura of design and the technological reality of today.</p>
+        </div>
+    </div>
+    </div>
+{% endblock content %}
